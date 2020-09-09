@@ -9,14 +9,14 @@ jobs:
     name: Run diffuse action
     steps:
       - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
+
       - name: set up JDK
         uses: actions/setup-java@v1
         with:
-          java-version: 1.8
+          java-version: 11
+
       - name: Get sample .apk for test purposes
-        run: wget https://github.com/appium/appium/blob/906350fd335f9485376214fdd17c7cdb6c9ff26b/sample-code/apps/ApiDemos-debug.apk?raw=true -O sample-apk.apk
+        run: wget https://github.com/appium/appium/blob/906350fd335f9485376214fdd17c7cdb6c9ff26b/sample-code/apps/ApiDemos-debug.apk?raw=true -q -O sample-apk.apk
 
       - id: diffuse
         uses: ./
