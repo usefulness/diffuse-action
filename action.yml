@@ -11,6 +11,10 @@ inputs:
     description: 'diffuse tool version'
     required: true
     default: '0.1.0'
+  debug:
+    description: 'if true, shows additional debug information'
+    required: false
+    default: false
 outputs:
   text-diff:
     description: "Diffuse output"
@@ -26,5 +30,6 @@ runs:
         INPUT_OLD_FILE: ${{ inputs.old-file-path }}
         INPUT_NEW_FILE: ${{ inputs.new-file-path }}
         INPUT_VERSION: ${{ inputs.lib-version }}
+        INPUT_DEBUG: ${{ inputs.debug }}
       run: ${{ github.action_path }}/entrypoint.sh
       shell: bash
