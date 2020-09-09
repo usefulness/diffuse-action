@@ -20,5 +20,6 @@ jobs:
         uses: ./
         with:
           file-path: sample-apk.apk
-      - run: echo ${{ steps.diffuse.outputs.text-diff }}
+      - id: println
+        run: echo ${{ steps.diffuse.outputs.text-diff }}
         shell: bash
