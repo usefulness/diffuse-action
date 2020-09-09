@@ -3,6 +3,13 @@
 wget "https://github.com/JakeWharton/diffuse/releases/download/$INPUT_VERSION/diffuse-$INPUT_VERSION-binary.jar" -q -O diffuse.jar
 
 args=()
+if [[ $INPUT_NEW_FILE == *.aab ]]; then
+  args+=(--aab)
+elif [[ $INPUT_NEW_FILE == *.aar ]]; then
+  args+=(--aar)
+elif [[ $INPUT_NEW_FILE == *.jar ]]; then
+  args+=(--jar)
+fi
 diff=$(java -jar diffuse.jar diff "${args[@]}" "$INPUT_OLD_FILE" "$INPUT_NEW_FILE")
 diff="${diff//'%'/'%25'}"
 diff="${diff//$'\n'/'%0A'}"
