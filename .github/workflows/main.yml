@@ -1,13 +1,5 @@
 on:
   pull_request:
-  push:
-    branches:
-      - master
-      - main
-      - trunk
-      - develop
-      - maine
-      - mane
 
 jobs:
   test-apk:

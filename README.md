@@ -25,7 +25,7 @@ The work
 `new-file-path` - Path to current file the diff should be generated for  
 `lib-version` _(Optional)_ - Overrides [Diffuse](https://github.com/JakeWharton/diffuse) dependency version
 
-#### Sample: Create Pull Request comment
+### Sample: Create Pull Request comment
 
 TODO: explain why to use actions/cache for now and its limitation
 
