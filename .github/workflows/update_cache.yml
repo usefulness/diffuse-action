@@ -1,0 +1,34 @@
+on:
+  push:
+    branches:
+      - master
+      - main
+      - trunk
+      - develop
+      - maine
+      - mane
+
+jobs:
+  test-apk:
+    runs-on: ubuntu-latest
+    name: Cache artifact for diffuse
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      - name: Build the app
+        run: wget https://github.com/appium/appium/blob/906350fd335f9485376214fdd17c7cdb6c9ff26b/sample-code/apps/ApiDemos-debug.apk?raw=true -O sample-apk.apk
+
+      - uses: actions/cache@v2
+        name: Upload base
+        with:
+          path: source-file
+          key: v3-${{ github.sha }}
+
+      - run: cp sample-apk.apk source-file
+        shell: bash
