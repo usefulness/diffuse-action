@@ -9,7 +9,7 @@ inputs:
     required: true
     default: '0.1.0'
 outputs:
-  diffuse:
+  text-diff:
     description: "Diffuse output"
     value: ${{ steps.run-diffuse.outputs.text-diff }}
 branding:
