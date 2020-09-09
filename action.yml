@@ -5,10 +5,10 @@ inputs:
     description: 'old file path'
     required: true
   new-file-path:
-    description: 'new File path'
+    description: 'new file path'
     required: true
   lib-version:
-    description: 'Diffuse version'
+    description: 'diffuse tool version'
     required: true
     default: '0.1.0'
 outputs:

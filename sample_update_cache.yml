@@ -27,8 +27,8 @@ jobs:
       - uses: actions/cache@v2
         name: Upload base
         with:
-          path: source-file
-          key: v1-${{ github.sha }}
+          path: diffuse-source-file
+          key: diffuse-${{ github.sha }}
 
       - run: cp sample-apk.apk source-file
         shell: bash

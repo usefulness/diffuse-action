@@ -13,27 +13,20 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
-      - name: Get sample .apk for test purposes
+      - name: Build app
         run: wget https://github.com/appium/appium/blob/906350fd335f9485376214fdd17c7cdb6c9ff26b/sample-code/apps/ApiDemos-debug.apk?raw=true -O sample-apk.apk
 
       - uses: actions/cache@v2
         name: Download base
         with:
-          path: source-file
-          key: v1-${{ github.event.pull_request.base.sha }}
-      - uses: actions/cache@v2
-        name: Upload target
-        with:
-          path: cached-file
-          key: v1-${{ github.event.pull_request.head.sha }}
+          path: diffuse-source-file
+          key: diffuse-${{ github.event.pull_request.base.sha }}
 
       - id: diffuse
         uses: ./
         with:
-          old-file-path: source-file
+          old-file-path: diffuse-source-file
           new-file-path: sample-apk.apk
-      - run: cp sample-apk.apk cached-file
-        shell: bash
 
       - run: echo "${{ steps.diffuse.outputs.text-diff }}"
         shell: bash

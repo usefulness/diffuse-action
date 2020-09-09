@@ -1,1 +1,136 @@
-# diffuse_action
+# Diffuse - Github Action
+
+![.github/workflows/main.yml](https://github.com/usefulness/diffuse_action/workflows/.github/workflows/main.yml/badge.svg)
+
+Simple Github Action wrapper for Jake Wharton's [Diffuse](https://github.com/JakeWharton/diffuse) tool.
+
+## Usage 
+The action only exposes _output_ containing the diff, so to effectively consume its output it is highly recommended to use other Github Actions to customize your experience.
+
+The work
+
+### Usage:
+
+```
+  - id: diffuse
+    uses: usefulness/diffuse-action@v1
+    with:
+      old-file-path: old/file/path/old_file.apk
+      new-file-path: new/file/path/new_file.apk
+      lib-version: 0.1.0
+```
+
+##### Parameters
+`old-file-path` - Path to reference file the diff should be generated for  
+`new-file-path` - Path to current file the diff should be generated for  
+`lib-version` _(Optional)_ - Overrides [Diffuse](https://github.com/JakeWharton/diffuse) dependency version
+
+#### Sample: Create Pull Request comment
+
+TODO: explain why to use actions/cache for now and its limitation
+
+1. Integrate with a regular Pull Request workflow:
+
+```yaml
+name: Pull Request workflow
+
+on:
+  pull_request:
+
+jobs:
+  generate-diff:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    - name: set up JDK 1.8
+      uses: actions/setup-java@v1
+      with:
+          java-version: 1.8
+    - name: Cache .gradle
+      uses: burrunan/gradle-cache-action@v1
+    - name: Build the apk
+      run: ./gradlew assembleRelease
+
+      # Generating the diff starts here 👇 
+      
+      - uses: actions/cache@v2
+        name: Download base
+        with:
+          path: diffuse-source-file
+          key: diffuse-${{ github.event.pull_request.base.sha }}
+
+      - id: diffuse
+        uses: usefulness/diffuse-action@v1
+        with:
+          old-file-path: diffuse-source-file
+          new-file-path: app/build/outputs/release/app.apk
+
+
+      # Consuming action output starts here 👇
+
+    - uses: peter-evans/find-comment@v1
+      id: find_comment
+      with:
+        issue-number: ${{ github.event.pull_request.number }}
+        body-includes: Diffuse output
+    - uses: peter-evans/create-or-update-comment@v1
+      if: ${{ steps.diffuse.outputs.text-diff != null || steps.find_comment.outputs.comment-id != null }}
+      with:
+        body: |
+          Diffuse output (customize your message here): 
+            ```
+            ${{ steps.diffuse.outputs.text-diff }}
+            ```
+        edit-mode: replace
+        comment-id: ${{ steps.find_comment.outputs.comment-id }}
+        issue-number: ${{ github.event.pull_request.number }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+```
+
+2. Integrate with you post-merge flow:
+```yaml
+on:
+  push:
+    branches:
+      - master
+      - main
+      - trunk
+      - develop
+      - maine
+      - mane
+
+jobs:
+  diffuse_cache:
+    runs-on: ubuntu-latest
+    name: Cache artifact for diffuse
+    steps:
+      - uses: actions/checkout@v2
+      - name: set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: Cache .gradle
+        uses: burrunan/gradle-cache-action@v1
+
+      - name: Build the app
+        run: ./gradlew assembleRelease
+
+      - uses: actions/cache@v2
+        name: Upload base
+        with:
+          path: diffuse-source-file
+          key: diffuse-${{ github.sha }}
+
+      - run: cp sample-apk.apk diffuse-source-file
+        shell: bash
+
+``` 
+
+<details><summary></summary>
+<p>
+
+🙏 Praise 🙏 be 🙏 to 🙏 Wharton 🙏
+
+</p>
+</details>

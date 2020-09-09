@@ -1,5 +1,13 @@
 on:
   pull_request:
+  push:
+    branches:
+      - master
+      - main
+      - trunk
+      - develop
+      - maine
+      - mane
 
 jobs:
   test-apk:
@@ -35,7 +43,7 @@ jobs:
             ```
             ${{ steps.diffuse.outputs.text-diff }}
             ```
-            (if visible the action works)
+            (if visible the action works as expected)
           edit-mode: replace
           comment-id: ${{ steps.find_comment.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
