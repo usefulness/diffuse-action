@@ -16,24 +16,27 @@ jobs:
       - name: Get sample .apk for test purposes
         run: wget https://github.com/appium/appium/blob/906350fd335f9485376214fdd17c7cdb6c9ff26b/sample-code/apps/ApiDemos-debug.apk?raw=true -O sample-apk.apk
 
-      - uses: actions/cache@v2
-        name: Download base
-        with:
-          path: source-file
-          key: v3-${{ github.event.pull_request.base.sha }}
-      - uses: actions/cache@v2
-        name: Upload target
-        with:
-          path: cached-file
-          key: v3-${{ github.event.pull_request.head.sha }}
-
       - id: diffuse
         uses: ./
         with:
-          old-file-path: source-file
+          old-file-path: sample-apk.apk
           new-file-path: sample-apk.apk
-      - run: cp sample-apk.apk cached-file
-        shell: bash
 
-      - run: echo "${{ steps.diffuse.outputs.text-diff }}"
-        shell: bash
+      - uses: peter-evans/find-comment@v1
+        id: find_comment
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body-includes: APK diff
+      - uses: peter-evans/create-or-update-comment@v1
+        if: ${{ steps.diffuse.outputs.text-diff != null || steps.find_comment.outputs.comment-id != null }}
+        with:
+          body: |
+            APK diff:
+            ```
+            ${{ steps.diffuse.outputs.text-diff }}
+            ```
+            (if visible the action works)
+          edit-mode: replace
+          comment-id: ${{ steps.find_comment.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          token: ${{ secrets.GITHUB_TOKEN }}
