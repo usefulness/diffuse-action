@@ -22,5 +22,5 @@ jobs:
           file-path: sample-apk.apk
       - id: output
         name: println
-        run: echo ${{ steps.diffuse.outputs.text-diff }}
+        run: echo "${{ steps.diffuse.outputs.text-diff }}"
         shell: bash
