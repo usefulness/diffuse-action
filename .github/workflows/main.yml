@@ -21,6 +21,7 @@ jobs:
         with:
           old-file-path: sample-apk.apk
           new-file-path: sample-apk.apk
+          debug: true
 
       - uses: peter-evans/find-comment@v1
         id: find_comment
