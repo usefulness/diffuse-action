@@ -24,4 +24,9 @@ diff=$(java -jar diffuse.jar diff "${args[@]}" "$INPUT_OLD_FILE" "$INPUT_NEW_FIL
 diff="${diff//'%'/'%25'}"
 diff="${diff//$'\n'/'%0A'}"
 diff="${diff//$'\r'/'%0D'}"
+
+if [ "${INPUT_DEBUG}" == true ]; then
+  echo "Diff size ${#diff}"
+  echo "Diff $diff"
+fi
 echo "::set-output name=text-diff::$diff"
