@@ -5,7 +5,7 @@ chmod +x diffuse.jar
 ls -l
 
 args=()
-diff=$(java -jar diffuse.jar "${args[@]}" "$INPUT_FILE" "$INPUT_FILE")
+diff=$(java -jar diffuse.jar diff "${args[@]}" "${args[@]}" "$INPUT_FILE" "$INPUT_FILE")
 diff="${diff//'%'/'%25'}"
 diff="${diff//$'\n'/'%0A'}"
 diff="${diff//$'\r'/'%0D'}"
