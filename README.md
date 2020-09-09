@@ -1,6 +1,5 @@
 # Diffuse - Github Action
-
-![.github/workflows/main.yml](https://github.com/usefulness/diffuse_action/workflows/.github/workflows/main.yml/badge.svg)
+![.github/workflows/after_merge.yml](https://github.com/usefulness/diffuse_action/workflows/.github/workflows/after_merge.yml/badge.svg)
 
 Simple Github Action wrapper for Jake Wharton's [Diffuse](https://github.com/JakeWharton/diffuse) tool.
 
