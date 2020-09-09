@@ -1,0 +1,15 @@
+on:
+  pull_request:
+
+jobs:
+  test-job:
+    runs-on: ubuntu-latest
+    name: Run diffuse action
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - id: diffues
+        uses: ./
+      - run: echo ${{ steps.diffues.outputs.text-diff }}
+        shell: bash
