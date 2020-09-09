@@ -1,0 +1,30 @@
+name: 'Diffuse Action for Gradle'
+description: "Generates Jake Wharton's Diffuse tool output between head and target branch of a Pull Request"
+inputs:
+  old-file-path:
+    description: 'old file path'
+    required: true
+  new-file-path:
+    description: 'new File path'
+    required: true
+  lib-version:
+    description: 'Diffuse version'
+    required: true
+    default: '0.1.0'
+outputs:
+  text-diff:
+    description: "Diffuse output"
+    value: ${{ steps.run-diffuse.outputs.text-diff }}
+branding:
+  color: 'red'
+  icon: 'check-square'
+runs:
+  using: 'composite'
+  steps:
+    - id: run-diffuse
+      env:
+        INPUT_OLD_FILE: ${{ inputs.old-file-path }}
+        INPUT_NEW_FILE: ${{ inputs.new-file-path }}
+        INPUT_VERSION: ${{ inputs.lib-version }}
+      run: ${{ github.action_path }}/entrypoint.sh
+      shell: bash
