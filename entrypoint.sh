@@ -1,8 +1,7 @@
 #!/bin/bash -e
 
-wget "https://github.com/JakeWharton/diffuse/releases/download/$INPUT_VERSION/diffuse-$INPUT_VERSION-binary.jar" -O diffuse.jar
+wget "https://github.com/JakeWharton/diffuse/releases/download/$INPUT_VERSION/diffuse-$INPUT_VERSION-binary.jar" -q -O diffuse.jar
 chmod +x diffuse.jar
-ls -l
 
 args=()
 diff=$(java -jar diffuse.jar diff "${args[@]}" "${args[@]}" "$INPUT_FILE" "$INPUT_FILE")
