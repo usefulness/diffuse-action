@@ -31,7 +31,7 @@ typeSelector = {
     ".aar": "--aar",
     ".jar": "--jar",
 }
-path, file_extension = os.path.splitext(oldFile)
+path, file_extension = os.path.splitext(newFile)
 java_call.append(typeSelector.get(file_extension))
 java_call.append(oldFile)
 java_call.append(newFile)
