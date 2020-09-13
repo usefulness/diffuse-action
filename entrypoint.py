@@ -4,7 +4,7 @@ import subprocess
 
 
 def is_debug():
-    return os.getenv("INPUT_DEBUG", True)
+    return os.getenv("INPUT_DEBUG", False)
 
 
 def github_output(message: str):
@@ -12,6 +12,13 @@ def github_output(message: str):
         .replace("\n", "%0A") \
         .replace("\r", "%0D")
 
+
+url = "https://github.com/JakeWharton/diffuse/releases/download/{0}/diffuse-{0}-binary.jar" \
+    .format(os.getenv("INPUT_VERSION"))
+downloadArgs = ""
+if is_debug():
+    downloadArgs = "-q"
+os.system("wget \"{}\" {} -O diffuse.jar".format(url, downloadArgs))
 
 java_call = ["java", "-jar", "diffuse.jar", "diff"]
 

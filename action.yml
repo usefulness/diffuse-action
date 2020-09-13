@@ -42,5 +42,5 @@ runs:
         INPUT_NEW_MAPPING_FILE: ${{ inputs.new-mapping-path }}
         INPUT_VERSION: ${{ inputs.lib-version }}
         INPUT_DEBUG: ${{ inputs.debug }}
-      run: ${{ github.action_path }}/entrypoint.sh
+      run: python3 ${{ github.action_path }}/entrypoint.py
       shell: bash
