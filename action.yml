@@ -23,8 +23,11 @@ inputs:
     default: false
 outputs:
   text-diff:
-    description: "Diffuse output"
+    description: "Diffuse full output"
     value: ${{ steps.run-diffuse.outputs.text-diff }}
+  summary:
+    description: "Diffuse summary"
+    value: ${{ steps.run-diffuse.outputs.summary }}
 branding:
   color: 'red'
   icon: 'check-square'
