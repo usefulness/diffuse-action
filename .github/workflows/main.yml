@@ -32,7 +32,7 @@ jobs:
           body: |
             APK diff:
             ```
-            ${{ steps.diffuse.outputs.text-diff }}
+            ${{ steps.diffuse.outputs.summary }}
             ```
             (if visible the action works as expected)
           edit-mode: replace
