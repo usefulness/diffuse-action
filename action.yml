@@ -4,9 +4,15 @@ inputs:
   old-file-path:
     description: 'old file path'
     required: true
+  old-mapping-path:
+    description: 'old mapping file produced by R8 or ProGuard'
+    required: false
   new-file-path:
     description: 'new file path'
     required: true
+  new-mapping-path:
+    description: 'new mapping file produced by R8 or ProGuard'
+    required: false
   lib-version:
     description: 'diffuse tool version'
     required: true
@@ -29,6 +35,8 @@ runs:
       env:
         INPUT_OLD_FILE: ${{ inputs.old-file-path }}
         INPUT_NEW_FILE: ${{ inputs.new-file-path }}
+        INPUT_OLD_MAPPING_FILE: ${{ inputs.old-mapping-path }}
+        INPUT_NEW_MAPPING_FILE: ${{ inputs.new-mapping-path }}
         INPUT_VERSION: ${{ inputs.lib-version }}
         INPUT_DEBUG: ${{ inputs.debug }}
       run: ${{ github.action_path }}/entrypoint.sh
