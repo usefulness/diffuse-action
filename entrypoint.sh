@@ -20,22 +20,23 @@ if [ "${INPUT_DEBUG}" == true ]; then
   echo "${args[@]}"
 fi
 
+function sanitize() {
+  local diff=$1
+  diff="${diff//'%'/'%25'}"
+  diff="${diff//$'\n'/'%0A'}"
+  diff="${diff//$'\r'/'%0D'}"
+  echo "$diff"
+}
+
+[ "$INPUT_OLD_MAPPING_FILE" ] && args+=(--old-mapping "$INPUT_OLD_MAPPING_FILE")
+[ "$INPUT_NEW_MAPPING_FILE" ] && args+=(--new-mapping "$INPUT_NEW_MAPPING_FILE")
+
 diff=$(java -jar diffuse.jar diff "${args[@]}" "$INPUT_OLD_FILE" "$INPUT_NEW_FILE")
-if [ "${INPUT_DEBUG}" == true ]; then
-  echo "Step 1: ${#diff}"
-fi
-diff="${diff//'%'/'%25'}"
-if [ "${INPUT_DEBUG}" == true ]; then
-  echo "Step 2: ${#diff}"
-fi
-diff="${diff//$'\n'/'%0A'}"
-if [ "${INPUT_DEBUG}" == true ]; then
-  echo "Step 3: ${#diff}"
-fi
-diff="${diff//$'\r'/'%0D'}"
+
+textDiff=$(sanitize "$diff")
 
 if [ "${INPUT_DEBUG}" == true ]; then
-  echo "Diff size ${#diff}"
-  echo "Diff $diff"
+  echo "Diff size ${#textDiff}"
+  echo "Diff $textDiff"
 fi
-echo "::set-output name=text-diff::$diff"
+echo "::set-output name=text-diff::$textDiff"
