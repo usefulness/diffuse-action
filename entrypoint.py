@@ -66,7 +66,7 @@ for match in pattern.finditer(diff):
     content = match.group("content").strip()
     os.system("echo \"::set-output name={}::{}\"".format(title, github_output(content)))
     if is_debug():
-        print("{}:\n{}".format(title, content))
+        print("{} size: {}".format(title, len(content)))
 
 output = open("diffuse-output.txt", "w")
 output.write(diff)
