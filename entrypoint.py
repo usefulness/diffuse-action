@@ -12,6 +12,7 @@ def github_output(message: str):
     return message.replace("%", "%25") \
         .replace("\n", "%0A") \
         .replace("\r", "%0D") \
+        .replace("$", "%24") \
         .replace('\x00', '')
 
 
