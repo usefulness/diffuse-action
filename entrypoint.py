@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import os
+import re
 import subprocess
 
 
@@ -11,7 +12,7 @@ def github_output(message: str):
     return message.replace("%", "%25") \
         .replace("\n", "%0A") \
         .replace("\r", "%0D") \
-        .replace('\x00','')
+        .replace('\x00', '')
 
 
 url = "https://github.com/JakeWharton/diffuse/releases/download/{0}/diffuse-{0}-binary.jar" \
@@ -58,20 +59,17 @@ diff = out.decode("utf-8").strip()
 if is_debug():
     print("Diff size: {}".format(len(diff)))
 
-lines = diff.split("\n")
-divider = next((index for index, line in enumerate(lines) if "=================" in line), None)
+pattern = re.compile('(=+\\s=+\\s+(?P<title>\\w+)\\s+=+\\s=*\\s)?(?P<content>[^=]+)')
 
-summary = None
+for match in pattern.finditer(diff):
+    title = (match.group("title") or "Summary").lower().replace(" ", "-")
+    content = match.group("content")
+    os.system("echo \"::set-output name={}::{}\"".format(title, github_output(content)))
+    if is_debug():
+        print("{}:\n{}".format(title, content))
 
-if divider:
-    summary = lines[0:divider - 1]
-else:
-    summary = lines
-
-summary = "\n".join(summary or []).strip()
-
-if is_debug():
-    print("SUMMARY:\n{}".format(summary))
-
-os.system("echo '::set-output name=text-diff::{}'".format(github_output(diff)))
-os.system("echo '::set-output name=summary::{}'".format(github_output(summary)))
+output = open("diffuse-output.txt", "w")
+output.write(diff)
+output.close()
+os.system("echo \"::set-output name=file-diff::{}\"".format(os.path.realpath(output.name)))
+os.system("echo \"::set-output name=text-diff::{}\"".format(github_output(diff)))

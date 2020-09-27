@@ -39,3 +39,7 @@ jobs:
           comment-id: ${{ steps.find_comment.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
           token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/upload-artifact@v2
+        with:
+          name: diffuse-output
+          path: ${{ steps.diffuse.outputs.file-diff }}
