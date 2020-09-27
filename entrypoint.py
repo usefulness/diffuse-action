@@ -24,6 +24,7 @@ def section(_title: str, _content: str):
   {_content}
 \\`\\`\\`
 </details>
+
 """
 
 
@@ -91,7 +92,7 @@ os.system(f"echo \"::set-output name=diff-raw::{github_output(diff)}\"")
 github_comment = ""
 if diffDictionary["summary"]:
     github_comment += f"""
-\\`\\`\\`text
+\\`\\`\\`
 {diffDictionary["summary"].strip()}
 \\`\\`\\`
 """
