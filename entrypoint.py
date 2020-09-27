@@ -62,8 +62,8 @@ if is_debug():
 pattern = re.compile('(=+\\s=+\\s+(?P<title>\\w+)\\s+=+\\s=*\\s)?(?P<content>[^=]+)')
 
 for match in pattern.finditer(diff):
-    title = (match.group("title") or "Summary").lower().replace(" ", "-")
-    content = match.group("content")
+    title = (match.group("title") or "Summary").lower().strip().replace(" ", "-")
+    content = match.group("content").strip()
     os.system("echo \"::set-output name={}::{}\"".format(title, github_output(content)))
     if is_debug():
         print("{}:\n{}".format(title, content))
