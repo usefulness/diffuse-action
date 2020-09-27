@@ -71,5 +71,8 @@ for match in pattern.finditer(diff):
 output = open("diffuse-output.txt", "w")
 output.write(diff)
 output.close()
-os.system("echo \"::set-output name=file-diff::{}\"".format(os.path.realpath(output.name)))
+outputPath = os.path.realpath(output.name)
+if is_debug():
+    print("Full output stored in: {}".format(outputPath))
+os.system("echo \"::set-output name=file-diff::{}\"".format(outputPath))
 os.system("echo \"::set-output name=text-diff::{}\"".format(github_output(diff)))
