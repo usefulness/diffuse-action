@@ -77,7 +77,7 @@ pattern = re.compile('(=+\\s=+\\s+(?P<title>\\w+)\\s+=+\\s=*\\s)?(?P<content>[^=
 diffDictionary = {}
 for match in pattern.finditer(diff):
     title = (match.group("title") or "Summary").lower().strip().replace(" ", "-")
-    content = match.group("content").strip()
+    content = match.group("content").strip().replace("$", "\\$")
     diffDictionary[title] = content
 
 output = open("diffuse-output.txt", "w")
