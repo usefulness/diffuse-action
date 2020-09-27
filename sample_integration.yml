@@ -28,5 +28,5 @@ jobs:
           old-file-path: diffuse-source-file
           new-file-path: sample-apk.apk
 
-      - run: echo "${{ steps.diffuse.outputs.text-diff }}"
+      - run: echo "${{ steps.diffuse.outputs.diff-raw }}"
         shell: bash

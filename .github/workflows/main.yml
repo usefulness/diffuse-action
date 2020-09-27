@@ -27,13 +27,12 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           body-includes: APK diff
       - uses: peter-evans/create-or-update-comment@v1
-        if: ${{ steps.diffuse.outputs.text-diff != null || steps.find_comment.outputs.comment-id != null }}
+        if: ${{ steps.diffuse.outputs.diff-raw != null || steps.find_comment.outputs.comment-id != null }}
         with:
           body: |
             APK diff:
-            ```
-            ${{ steps.diffuse.outputs.summary }}
-            ```
+            ${{ steps.diffuse.outputs.diff-gh-comment }}
+
             (if visible the action works as expected)
           edit-mode: replace
           comment-id: ${{ steps.find_comment.outputs.comment-id }}
@@ -42,4 +41,4 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: diffuse-output
-          path: ${{ steps.diffuse.outputs.file-diff }}
+          path: ${{ steps.diffuse.outputs.diff-file }}

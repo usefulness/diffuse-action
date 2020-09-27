@@ -74,13 +74,12 @@ jobs:
         issue-number: ${{ github.event.pull_request.number }}
         body-includes: Diffuse output
     - uses: peter-evans/create-or-update-comment@v1
-      if: ${{ steps.diffuse.outputs.text-diff != null || steps.find_comment.outputs.comment-id != null }}
+      if: ${{ steps.diffuse.outputs.diff-raw != null || steps.find_comment.outputs.comment-id != null }}
       with:
         body: |
           Diffuse output (customize your message here): 
-            ```
-            ${{ steps.diffuse.outputs.text-diff }}
-            ```
+
+          ${{ steps.diffuse.outputs.diff-gh-comment }}
         edit-mode: replace
         comment-id: ${{ steps.find_comment.outputs.comment-id }}
         issue-number: ${{ github.event.pull_request.number }}
