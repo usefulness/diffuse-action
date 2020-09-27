@@ -22,12 +22,15 @@ inputs:
     required: false
     default: false
 outputs:
-  text-diff:
+  diff-raw:
     description: "Diffuse full output"
-    value: ${{ steps.run-diffuse.outputs.text-diff }}
-  file-diff:
+    value: ${{ steps.run-diffuse.outputs.diff-raw }}
+  diff-file:
     description: "Diffuse full output as file"
-    value: ${{ steps.run-diffuse.outputs.file-diff }}
+    value: ${{ steps.run-diffuse.outputs.diff-file }}
+  diff-gh-comment:
+    description: "Diffuse full output as Github comment"
+    value: ${{ steps.run-diffuse.outputs.diff-gh-comment }}
   summary:
     description: "Diffuse summary"
     value: ${{ steps.run-diffuse.outputs.summary }}

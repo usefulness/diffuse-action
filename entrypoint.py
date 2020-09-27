@@ -15,12 +15,24 @@ def github_output(message: str):
         .replace('\x00', '')
 
 
+def section(_title: str, _content: str):
+    return f"""
+<details>
+  <summary>{_title}</summary>
+  
+\\`\\`\\`
+  {_content}
+\\`\\`\\`
+</details>
+"""
+
+
 url = "https://github.com/JakeWharton/diffuse/releases/download/{0}/diffuse-{0}-binary.jar" \
     .format(os.getenv("INPUT_VERSION"))
 downloadArgs = ""
-if is_debug():
-    downloadArgs = "-q"
-os.system("wget \"{}\" {} -O diffuse.jar".format(url, downloadArgs))
+if not is_debug():
+    downloadArgs += "-q"
+os.system(f"wget \"{url}\" {downloadArgs} -O diffuse.jar")
 
 java_call = ["java", "-jar", "diffuse.jar", "diff"]
 
@@ -57,22 +69,36 @@ if process.returncode != 0:
 diff = out.decode("utf-8").strip()
 
 if is_debug():
-    print("Diff size: {}".format(len(diff)))
+    print(f"Diff size: {len(diff)}")
 
 pattern = re.compile('(=+\\s=+\\s+(?P<title>\\w+)\\s+=+\\s=*\\s)?(?P<content>[^=]+)')
 
+diffDictionary = {}
 for match in pattern.finditer(diff):
     title = (match.group("title") or "Summary").lower().strip().replace(" ", "-")
     content = match.group("content").strip()
-    os.system("echo \"::set-output name={}::{}\"".format(title, github_output(content)))
-    if is_debug():
-        print("{} size: {}".format(title, len(content)))
+    diffDictionary[title] = content
 
 output = open("diffuse-output.txt", "w")
 output.write(diff)
 output.close()
 outputPath = os.path.realpath(output.name)
 if is_debug():
-    print("Full output stored in: {}".format(outputPath))
-os.system("echo \"::set-output name=file-diff::{}\"".format(outputPath))
-os.system("echo \"::set-output name=text-diff::{}\"".format(github_output(diff)))
+    print(f"Full output stored in: {outputPath}")
+os.system(f"echo \"::set-output name=diff-file::{outputPath}\"")
+os.system(f"echo \"::set-output name=diff-raw::{github_output(diff)}\"")
+
+github_comment = ""
+if diffDictionary["summary"]:
+    github_comment += f"""
+\\`\\`\\`text
+{diffDictionary["summary"].strip()}
+\\`\\`\\`
+"""
+
+for key, value in diffDictionary.items():
+    os.system("echo \"::set-output name={}::{}\"".format(key, github_output(value)))
+    if len(value.strip()) > 0 and key != "summary":
+        github_comment += section(key, value)
+
+os.system(f"echo \"::set-output name=diff-gh-comment::{github_output(github_comment)}\"")
