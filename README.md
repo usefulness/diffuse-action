@@ -121,7 +121,7 @@ jobs:
         uses: burrunan/gradle-cache-action@v1
 
       - name: Build the app
-        run: ./gradlew assembleRelease
+        run: ./gradlew assembleDebug // difuse doesn't support obfuscated builds
 
       # Integration starts here 👇 
       
