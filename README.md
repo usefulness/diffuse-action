@@ -113,10 +113,12 @@ jobs:
     name: Cache artifact for diffuse
     steps:
       - uses: actions/checkout@v2
+      
       - name: set up JDK
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
+          
       - name: Cache .gradle
         uses: burrunan/gradle-cache-action@v1
 
@@ -136,6 +138,16 @@ jobs:
         shell: bash
 
 ``` 
+
+
+### More samples
+
+Sample pull request: https://github.com/mateuszkwiecinski/github_browser/pull/52  
+Example applcation: [workflow](https://github.com/mateuszkwiecinski/github_browser/blob/master/.github/workflows/run_diffuse.yml).
+
+![pull_request](/images/pull_request.png)
+
+
 
 <details><summary></summary>
 <p>
