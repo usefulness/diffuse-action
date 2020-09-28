@@ -52,47 +52,47 @@ jobs:
       uses: burrunan/gradle-cache-action@v1
       
     - name: Build the apk
-      run: ./gradlew assembleRelease
+      run: ./gradlew assembleDebug
 
-      # Generating the diff starts here 👇 
-      
-      - uses: actions/cache@v2
-        name: Download base
-        with:
-          path: diffuse-source-file
-          key: diffuse-${{ github.event.pull_request.base.sha }}
+    # Generating the diff starts here 👇 
 
-      - id: diffuse
-        uses: usefulness/diffuse-action@v1
-        with:
-          old-file-path: diffuse-source-file
-          new-file-path: app/build/outputs/release/app.apk
+    - uses: actions/cache@v2
+      name: Download base
+      with:
+        path: diffuse-source-file
+        key: diffuse-${{ github.event.pull_request.base.sha }}
+
+    - id: diffuse
+      uses: usefulness/diffuse-action@v1
+      with:
+        old-file-path: diffuse-source-file
+        new-file-path: app/build/outputs/release/app.apk
 
 
-      # Consuming action output starts here 👇
+    # Consuming action output starts here 👇
 
-      - uses: peter-evans/find-comment@v1
-        id: find_comment
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          body-includes: Diffuse output
+    - uses: peter-evans/find-comment@v1
+      id: find_comment
+      with:
+        issue-number: ${{ github.event.pull_request.number }}
+        body-includes: Diffuse output
 
-      - uses: peter-evans/create-or-update-comment@v1
-        if: ${{ steps.diffuse.outputs.diff-raw != null || steps.find_comment.outputs.comment-id != null }}
-        with:
-          body: |
-            Diffuse output (customize your message here): 
+    - uses: peter-evans/create-or-update-comment@v1
+      if: ${{ steps.diffuse.outputs.diff-raw != null || steps.find_comment.outputs.comment-id != null }}
+      with:
+        body: |
+          Diffuse output (customize your message here): 
 
-            ${{ steps.diffuse.outputs.diff-gh-comment }}
-          edit-mode: replace
-          comment-id: ${{ steps.find_comment.outputs.comment-id }}
-          issue-number: ${{ github.event.pull_request.number }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          ${{ steps.diffuse.outputs.diff-gh-comment }}
+        edit-mode: replace
+        comment-id: ${{ steps.find_comment.outputs.comment-id }}
+        issue-number: ${{ github.event.pull_request.number }}
+        token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/upload-artifact@v2
-        with:
-          name: diffuse-output
-          path: ${{ steps.diffuse.outputs.diff-file }}
+    - uses: actions/upload-artifact@v2
+      with:
+        name: diffuse-output
+        path: ${{ steps.diffuse.outputs.diff-file }}
 ```
 
 2. Integrate with you post-merge flow:
