@@ -114,13 +114,16 @@ jobs:
       - name: Build the app
         run: ./gradlew assembleRelease
 
+      # Integration starts here 👇 
+      
       - uses: actions/cache@v2
         name: Upload base
         with:
           path: diffuse-source-file
           key: diffuse-${{ github.sha }}
 
-      - run: cp sample-apk.apk diffuse-source-file
+      # Copy your build artifact under `diffuse-source-file` name which will be saved in cache
+      - run: cp sample-apk.apk diffuse-source-file 
         shell: bash
 
 ``` 
