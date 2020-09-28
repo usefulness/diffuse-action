@@ -142,8 +142,8 @@ jobs:
 
 ### More samples
 
-Sample pull request: https://github.com/mateuszkwiecinski/github_browser/pull/52  
-Example applcation: [workflow](https://github.com/mateuszkwiecinski/github_browser/blob/master/.github/workflows/run_diffuse.yml).
+Sample application as a [pull request comment](https://github.com/mateuszkwiecinski/github_browser/pull/52)  
+Corresponding [workflow](https://github.com/mateuszkwiecinski/github_browser/blob/master/.github/workflows/run_diffuse.yml) file  
 
 ![pull_request](/images/pull_request.png)
 
