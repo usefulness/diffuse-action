@@ -42,37 +42,41 @@ jobs:
     
     steps:
     - uses: actions/checkout@v2
+    
     - name: set up JDK 1.8
       uses: actions/setup-java@v1
       with:
           java-version: 1.8
+          
     - name: Cache .gradle
       uses: burrunan/gradle-cache-action@v1
-    - name: Build the apk
-      run: ./gradlew assembleRelease
-
-      # Generating the diff starts here 👇 
       
-      - uses: actions/cache@v2
-        name: Download base
-        with:
-          path: diffuse-source-file
-          key: diffuse-${{ github.event.pull_request.base.sha }}
+    - name: Build the apk
+      run: ./gradlew assembleDebug
 
-      - id: diffuse
-        uses: usefulness/diffuse-action@v1
-        with:
-          old-file-path: diffuse-source-file
-          new-file-path: app/build/outputs/release/app.apk
+    # Generating the diff starts here 👇 
+
+    - uses: actions/cache@v2
+      name: Download base
+      with:
+        path: diffuse-source-file
+        key: diffuse-${{ github.event.pull_request.base.sha }}
+
+    - id: diffuse
+      uses: usefulness/diffuse-action@v1
+      with:
+        old-file-path: diffuse-source-file
+        new-file-path: app/build/outputs/release/app.apk
 
 
-      # Consuming action output starts here 👇
+    # Consuming action output starts here 👇
 
     - uses: peter-evans/find-comment@v1
       id: find_comment
       with:
         issue-number: ${{ github.event.pull_request.number }}
         body-includes: Diffuse output
+
     - uses: peter-evans/create-or-update-comment@v1
       if: ${{ steps.diffuse.outputs.diff-raw != null || steps.find_comment.outputs.comment-id != null }}
       with:
@@ -84,6 +88,11 @@ jobs:
         comment-id: ${{ steps.find_comment.outputs.comment-id }}
         issue-number: ${{ github.event.pull_request.number }}
         token: ${{ secrets.GITHUB_TOKEN }}
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: diffuse-output
+        path: ${{ steps.diffuse.outputs.diff-file }}
 ```
 
 2. Integrate with you post-merge flow:
@@ -104,15 +113,17 @@ jobs:
     name: Cache artifact for diffuse
     steps:
       - uses: actions/checkout@v2
+      
       - name: set up JDK
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
+          
       - name: Cache .gradle
         uses: burrunan/gradle-cache-action@v1
 
       - name: Build the app
-        run: ./gradlew assembleRelease
+        run: ./gradlew assembleDebug // difuse doesn't support obfuscated builds
 
       # Integration starts here 👇 
       
@@ -127,6 +138,16 @@ jobs:
         shell: bash
 
 ``` 
+
+
+### More samples
+
+Sample application as a [pull request comment](https://github.com/mateuszkwiecinski/github_browser/pull/52)  
+Corresponding [workflow](https://github.com/mateuszkwiecinski/github_browser/blob/master/.github/workflows/run_diffuse.yml) file  
+
+![pull_request](/images/pull_request.png)
+
+
 
 <details><summary></summary>
 <p>
