@@ -4,7 +4,7 @@ on:
 jobs:
   test-apk:
     runs-on: ubuntu-latest
-    name: Run diffuse action
+    name: Run diffuse action (part 1)
     steps:
       - uses: actions/checkout@v2
 
@@ -30,18 +30,17 @@ jobs:
         id: find_comment
         with:
           issue-number: ${{ github.event.pull_request.number }}
-          body-includes: diffuse-smoke-test
+          body-includes: diffuse-smoke-test-1
 
       - uses: peter-evans/create-or-update-comment@v1
-        if: ${{ steps.diffuse.outputs.diff-raw != null || steps.find_comment.outputs.comment-id != null }}
         with:
           body: |
-            ### diffuse-smoke-test
+            ### diffuse-smoke-test-1
 
             `steps.diffuse.outputs.diff-gh-comment:`
             ${{ steps.diffuse.outputs.diff-gh-comment }}
 
-             `steps.diffuse.outputs.summary`
+            `steps.diffuse.outputs.summary`
             ```
             ${{ steps.diffuse.outputs.summary }}
             ```
@@ -55,8 +54,6 @@ jobs:
             ```
             ${{ steps.diffuse.outputs.dex }}
             ```
-
-            (if visible the action works as expected)
           edit-mode: replace
           comment-id: ${{ steps.find_comment.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
@@ -64,5 +61,67 @@ jobs:
 
       - uses: actions/upload-artifact@v2
         with:
-          name: diffuse-output
+          name: diffuse-output-1
+          path: ${{ steps.diffuse.outputs.diff-file }}
+
+  test-apk-2:
+    runs-on: ubuntu-latest
+    name: Run diffuse action (part 2)
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      - name: Get very old version of Andorid Auto app for test purposes
+        run: wget "https://github.com/usefulness/storage/raw/master/audroid-auto-very-old.apk" -O very-old-apk.apk
+
+      - name: Get new version of Andorid Auto app for test purposes
+        run: wget "https://github.com/usefulness/storage/raw/master/android-auto-new.apk" -O new-apk.apk
+
+      - id: diffuse
+        uses: ./
+        with:
+          old-file-path: very-old-apk.apk
+          new-file-path: new-apk.apk
+          debug: true
+
+      - uses: peter-evans/find-comment@v1
+        id: find_comment
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body-includes: diffuse-smoke-test-2
+
+      - uses: peter-evans/create-or-update-comment@v1
+        with:
+          body: |
+            ### diffuse-smoke-test-2
+
+            `steps.diffuse.outputs.diff-gh-comment-no-dex:`
+            ${{ steps.diffuse.outputs.diff-gh-comment-no-dex }}
+
+            `steps.diffuse.outputs.summary`
+            ```
+            ${{ steps.diffuse.outputs.summary }}
+            ```
+
+            `steps.diffuse.outputs.manifest`
+            ```
+            ${{ steps.diffuse.outputs.manifest }}
+            ```
+
+            `steps.diffuse.outputs.dex`
+            ```
+            ${{ steps.diffuse.outputs.dex }}
+            ```
+          edit-mode: replace
+          comment-id: ${{ steps.find_comment.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: diffuse-output-2
           path: ${{ steps.diffuse.outputs.diff-file }}

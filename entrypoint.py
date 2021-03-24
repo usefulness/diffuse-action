@@ -36,9 +36,11 @@ def header(_content: str):
 \\`\\`\\`
 """
 
+
 def grouper(iterable, n, fillvalue=None):
     args = [iter(iterable)] * n
     return zip_longest(*args, fillvalue=fillvalue)
+
 
 url = "https://github.com/JakeWharton/diffuse/releases/download/{0}/diffuse-{0}-binary.jar" \
     .format(os.getenv("INPUT_VERSION"))
@@ -91,16 +93,23 @@ if is_debug():
     print(f"Found {len(sections)} sections")
 
 github_comment = ""
+github_comment_no_dex = ""
+github_output_limit = 4500
 
 for (title, content) in grouper(sections, 2):
     key = title.lower().strip().replace(" ", "-")
     value = content.strip().replace("$", "_")
+    if len(value) > github_output_limit:
+        value = value[0:github_output_limit] + "\n...✂"
 
-    os.system("echo \"::set-output name={}::{}\"".format(title, github_output(value)))
+    os.system("echo \"::set-output name={}::{}\"".format(key, github_output(value)))
     if key == "summary":
         github_comment += header(value)
+        github_comment_no_dex += header(value)
     else:
-        github_comment += section(key, value)
+        github_comment += section(title.strip(), value)
+        if key != "dex":
+            github_comment_no_dex += section(title.strip(), value)
 
 output = open("diffuse-output.txt", "w")
 output.write(diff)
@@ -109,5 +118,6 @@ outputPath = os.path.realpath(output.name)
 if is_debug():
     print(f"Full output stored in: {outputPath}")
 os.system(f"echo \"::set-output name=diff-file::{outputPath}\"")
-os.system(f"echo \"::set-output name=diff-raw::{github_output(diff)}\"")
+os.system(f"echo \"::set-output name=diff-raw::{github_output(diff[0:github_output_limit])}\"")
 os.system(f"echo \"::set-output name=diff-gh-comment::{github_output(github_comment)}\"")
+os.system(f"echo \"::set-output name=diff-gh-comment-no-dex::{github_output(github_comment_no_dex)}\"")

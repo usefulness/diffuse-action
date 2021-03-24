@@ -23,3 +23,8 @@ jobs:
         with:
           old-file-path: sample-apk.apk
           new-file-path: sample-apk.apk
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: diffuse-output
+          path: ${{ steps.diffuse.outputs.diff-file }}
