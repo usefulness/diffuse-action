@@ -7,37 +7,61 @@ jobs:
     name: Run diffuse action
     steps:
       - uses: actions/checkout@v2
+
       - name: set up JDK
         uses: actions/setup-java@v1
         with:
           java-version: 11
-      - name: Get sample .apk for test purposes
-        run: wget https://github.com/appium/appium/blob/906350fd335f9485376214fdd17c7cdb6c9ff26b/sample-code/apps/ApiDemos-debug.apk?raw=true -O sample-apk.apk
+
+      - name: Get old version of Andorid Auto app for test purposes
+        run: wget "https://github.com/usefulness/storage/raw/master/android-auto-old.apk" -O old-apk.apk
+
+      - name: Get new version of Andorid Auto app for test purposes
+        run: wget "https://github.com/usefulness/storage/raw/master/android-auto-new.apk" -O new-apk.apk
 
       - id: diffuse
         uses: ./
         with:
-          old-file-path: sample-apk.apk
-          new-file-path: sample-apk.apk
+          old-file-path: old-apk.apk
+          new-file-path: new-apk.apk
           debug: true
 
       - uses: peter-evans/find-comment@v1
         id: find_comment
         with:
           issue-number: ${{ github.event.pull_request.number }}
-          body-includes: APK diff
+          body-includes: diffuse-smoke-test
+
       - uses: peter-evans/create-or-update-comment@v1
         if: ${{ steps.diffuse.outputs.diff-raw != null || steps.find_comment.outputs.comment-id != null }}
         with:
           body: |
-            APK diff:
+            ### diffuse-smoke-test
+
+            `steps.diffuse.outputs.diff-gh-comment:`
             ${{ steps.diffuse.outputs.diff-gh-comment }}
+
+             `steps.diffuse.outputs.summary`
+            ```
+            ${{ steps.diffuse.outputs.summary }}
+            ```
+
+            `steps.diffuse.outputs.manifest`
+            ```
+            ${{ steps.diffuse.outputs.manifest }}
+            ```
+
+            `steps.diffuse.outputs.dex`
+            ```
+            ${{ steps.diffuse.outputs.dex }}
+            ```
 
             (if visible the action works as expected)
           edit-mode: replace
           comment-id: ${{ steps.find_comment.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
           token: ${{ secrets.GITHUB_TOKEN }}
+
       - uses: actions/upload-artifact@v2
         with:
           name: diffuse-output

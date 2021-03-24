@@ -40,6 +40,9 @@ outputs:
   dex:
     description: "Diffuse dex info"
     value: ${{ steps.run-diffuse.outputs.dex }}
+  manifest:
+    description: "Diffuse manifest info"
+    value: ${{ steps.run-diffuse.outputs.manifest }}
   arcs:
     description: "Diffuse arcs info"
     value: ${{ steps.run-diffuse.outputs.arcs }}

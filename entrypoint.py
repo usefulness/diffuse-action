@@ -2,6 +2,7 @@
 import os
 import re
 import subprocess
+from itertools import zip_longest
 
 
 def is_debug():
@@ -27,6 +28,17 @@ def section(_title: str, _content: str):
 
 """
 
+
+def header(_content: str):
+    return f"""
+\\`\\`\\`
+  {_content}
+\\`\\`\\`
+"""
+
+def grouper(iterable, n, fillvalue=None):
+    args = [iter(iterable)] * n
+    return zip_longest(*args, fillvalue=fillvalue)
 
 url = "https://github.com/JakeWharton/diffuse/releases/download/{0}/diffuse-{0}-binary.jar" \
     .format(os.getenv("INPUT_VERSION"))
@@ -72,13 +84,23 @@ diff = out.decode("utf-8").strip()
 if is_debug():
     print(f"Diff size: {len(diff)}")
 
-pattern = re.compile('(=+\\s=+\\s+(?P<title>\\w+)\\s+=+\\s=*\\s)?(?P<content>[^=]+)')
+headerPattern = re.compile('=+\\s=+\\s+(\\w+)\\s+=+\\s=*\\s')
+sections = ["Summary"] + headerPattern.split(diff)
 
-diffDictionary = {}
-for match in pattern.finditer(diff):
-    title = (match.group("title") or "Summary").lower().strip().replace(" ", "-")
-    content = match.group("content").strip().replace("$", "_")
-    diffDictionary[title] = content
+if is_debug():
+    print(f"Found {len(sections)} sections")
+
+github_comment = ""
+
+for (title, content) in grouper(sections, 2):
+    key = title.lower().strip().replace(" ", "-")
+    value = content.strip().replace("$", "_")
+
+    os.system("echo \"::set-output name={}::{}\"".format(title, github_output(value)))
+    if key == "summary":
+        github_comment += header(value)
+    else:
+        github_comment += section(key, value)
 
 output = open("diffuse-output.txt", "w")
 output.write(diff)
@@ -88,18 +110,4 @@ if is_debug():
     print(f"Full output stored in: {outputPath}")
 os.system(f"echo \"::set-output name=diff-file::{outputPath}\"")
 os.system(f"echo \"::set-output name=diff-raw::{github_output(diff)}\"")
-
-github_comment = ""
-if diffDictionary["summary"]:
-    github_comment += f"""
-\\`\\`\\`
-{diffDictionary["summary"].strip()}
-\\`\\`\\`
-"""
-
-for key, value in diffDictionary.items():
-    os.system("echo \"::set-output name={}::{}\"".format(key, github_output(value)))
-    if len(value.strip()) > 0 and key != "summary":
-        github_comment += section(key, value)
-
 os.system(f"echo \"::set-output name=diff-gh-comment::{github_output(github_comment)}\"")
