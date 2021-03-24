@@ -31,6 +31,9 @@ outputs:
   diff-gh-comment:
     description: "Diffuse full output as Github comment"
     value: ${{ steps.run-diffuse.outputs.diff-gh-comment }}
+  diff-gh-comment-no-dex:
+    description: "Diffuse full output as Github comment, without dex section, workaround forhttps://github.com/JakeWharton/diffuse/issues/96"
+    value: ${{ steps.run-diffuse.outputs.diff-gh-comment-no-dex }}
   summary:
     description: "Diffuse summary"
     value: ${{ steps.run-diffuse.outputs.summary }}
