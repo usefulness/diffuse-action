@@ -76,7 +76,7 @@ jobs:
           java-version: 11
 
       - name: Get very old version of Andorid Auto app for test purposes
-        run: wget "https://github.com/usefulness/storage/raw/master/audroid-auto-very-old.apk" -O very-old-apk.apk
+        run: wget "https://github.com/usefulness/storage/raw/master/android-auto-very-old.apk" -O very-old-apk.apk
 
       - name: Get new version of Andorid Auto app for test purposes
         run: wget "https://github.com/usefulness/storage/raw/master/android-auto-new.apk" -O new-apk.apk
