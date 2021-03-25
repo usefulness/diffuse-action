@@ -22,7 +22,7 @@ def section(_title: str, _content: str):
   <summary>{_title}</summary>
   
 \\`\\`\\`
-  {_content}
+{_content}
 \\`\\`\\`
 </details>
 
@@ -32,7 +32,7 @@ def section(_title: str, _content: str):
 def header(_content: str):
     return f"""
 \\`\\`\\`
-  {_content}
+{_content}
 \\`\\`\\`
 """
 
@@ -87,13 +87,15 @@ if is_debug():
     print(f"Diff size: {len(diff)}")
 
 headerPattern = re.compile('=+\\s=+\\s+(\\w+)\\s+=+\\s=*\\s')
-sections = ["Summary"] + headerPattern.split(diff)
+sections = ["SUMMARY"] + headerPattern.split(diff)
 
 if is_debug():
     print(f"Found {len(sections)} sections")
 
 github_comment = ""
+github_comment_all_collapsed = ""
 github_comment_no_dex = ""
+github_comment_no_dex_all_collapsed = ""
 github_output_limit = 4500
 
 for (title, content) in grouper(sections, 2):
@@ -106,10 +108,14 @@ for (title, content) in grouper(sections, 2):
     if key == "summary":
         github_comment += header(value)
         github_comment_no_dex += header(value)
+        github_comment_all_collapsed += section(title, value)
+        github_comment_no_dex_all_collapsed += section(title, value)
     else:
         github_comment += section(title.strip(), value)
+        github_comment_all_collapsed += section(title.strip(), value)
         if key != "dex":
             github_comment_no_dex += section(title.strip(), value)
+            github_comment_no_dex_all_collapsed += section(title.strip(), value)
 
 output = open("diffuse-output.txt", "w")
 output.write(diff)
@@ -120,4 +126,6 @@ if is_debug():
 os.system(f"echo \"::set-output name=diff-file::{outputPath}\"")
 os.system(f"echo \"::set-output name=diff-raw::{github_output(diff[0:github_output_limit])}\"")
 os.system(f"echo \"::set-output name=diff-gh-comment::{github_output(github_comment)}\"")
+os.system(f"echo \"::set-output name=diff-gh-comment-all-collapsed::{github_output(github_comment_all_collapsed)}\"")
 os.system(f"echo \"::set-output name=diff-gh-comment-no-dex::{github_output(github_comment_no_dex)}\"")
+os.system(f"echo \"::set-output name=diff-gh-comment-no-dex-all-collapsed::{github_output(github_comment_no_dex_all_collapsed)}\"")
