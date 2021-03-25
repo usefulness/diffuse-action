@@ -89,7 +89,7 @@ oldSizeText = sizeof_fmt(oldSize)
 newSize = os.stat(newFile).st_size
 newSizeText = sizeof_fmt(newSize)
 diff = newSize - oldSize
-diffComment1 = f"{sizeof_fmt(diff, sign=True)} ({oldSizeText} -> {newSizeText})"
+diffComment1 = f"**{sizeof_fmt(diff, sign=True)}** ({oldSizeText} -> {newSizeText})"
 if is_debug():
     print("Old: {} bytes".format(oldSizeText))
     print("New: {} bytes".format(newSizeText))
