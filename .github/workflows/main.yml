@@ -36,6 +36,11 @@ jobs:
         with:
           body: |
             ### diffuse-smoke-test-1
+            `size-old-bytes`: ${{ steps.diffuse.outputs.size-old-bytes }}
+            `size-old-text`: ${{ steps.diffuse.outputs.size-old-text }}
+            `size-new-bytes`: ${{ steps.diffuse.outputs.size-new-bytes }}
+            `size-new-text`: ${{ steps.diffuse.outputs.size-new-text }}
+            `size-diff-comment_style_1`: ${{ steps.diffuse.outputs.size-diff-comment_style_1 }}
 
             `steps.diffuse.outputs.diff-gh-comment:`
             ${{ steps.diffuse.outputs.diff-gh-comment }}
@@ -101,6 +106,11 @@ jobs:
         with:
           body: |
             ### diffuse-smoke-test-2
+            `size-old-bytes`: ${{ steps.diffuse.outputs.size-old-bytes }}
+            `size-old-text`: ${{ steps.diffuse.outputs.size-old-text }}
+            `size-new-bytes`: ${{ steps.diffuse.outputs.size-new-bytes }}
+            `size-new-text`: ${{ steps.diffuse.outputs.size-new-text }}
+            `size-diff-comment_style_1`: ${{ steps.diffuse.outputs.size-diff-comment_style_1 }}
 
             `steps.diffuse.outputs.diff-gh-comment-no-dex:`
             ${{ steps.diffuse.outputs.diff-gh-comment-no-dex }}
