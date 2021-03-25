@@ -40,6 +40,7 @@ outputs:
   diff-gh-comment-no-dex-all-collapsed:
     description: "Diffuse full output as Github comment all collapsed, without dex section, workaround for https://github.com/JakeWharton/diffuse/issues/96"
     value: ${{ steps.run-diffuse.outputs.diff-gh-comment-no-dex-all-collapsed }}
+
   summary:
     description: "Diffuse summary"
     value: ${{ steps.run-diffuse.outputs.summary }}
@@ -61,6 +62,22 @@ outputs:
   classes:
     description: "Diffuse classes info"
     value: ${{ steps.run-diffuse.outputs.classes }}
+
+  size-old-bytes:
+    description: "Old artifact size, number, in Bytes"
+    value: ${{ steps.run-diffuse.outputs.size-old-bytes }}
+  size-old-text:
+    description: "Old artifact size, text, formatted with unit i.e. 320 KiB"
+    value: ${{ steps.run-diffuse.outputs.size-old-text }}
+  size-new-bytes:
+    description: "New artifact size, number, in Bytes"
+    value: ${{ steps.run-diffuse.outputs.size-new-bytes }}
+  size-new-text:
+    description: "New artifact size, text, formatted with unit i.e. 320 KiB"
+    value: ${{ steps.run-diffuse.outputs.size-new-text }}
+  size-diff-comment_style_1:
+    description: "Size diff in a human readable form. i.e. '+16.6MiB (16.1MiB -> 32.7MiB)'"
+    value: ${{ steps.run-diffuse.outputs.size-diff-comment_style_1 }}
 branding:
   color: 'red'
   icon: 'check-square'

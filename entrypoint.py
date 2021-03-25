@@ -42,6 +42,20 @@ def grouper(iterable, n, fillvalue=None):
     return zip_longest(*args, fillvalue=fillvalue)
 
 
+def sizeof_fmt(num, suffix='B', sign=False):
+    for unit in ['', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi']:
+        if abs(num) < 1024.0:
+            if sign:
+                return "%+3.1f%s%s" % (num, unit, suffix)
+            else:
+                return "%3.1f%s%s" % (num, unit, suffix)
+        num /= 1024.0
+    if sign:
+        return "%+.1f%s%s" % (num, 'Yi', suffix)
+    else:
+        return "%.1f%s%s" % (num, 'Yi', suffix)
+
+
 url = "https://github.com/JakeWharton/diffuse/releases/download/{0}/diffuse-{0}-binary.jar" \
     .format(os.getenv("INPUT_VERSION"))
 downloadArgs = ""
@@ -70,10 +84,24 @@ if os.getenv("INPUT_OLD_MAPPING_FILE").strip():
 if os.getenv("INPUT_NEW_MAPPING_FILE").strip():
     java_call.extend(["--new-mapping", os.getenv("INPUT_NEW_MAPPING_FILE")])
 
+oldSize = os.stat(oldFile).st_size
+oldSizeText = sizeof_fmt(oldSize)
+newSize = os.stat(newFile).st_size
+newSizeText = sizeof_fmt(newSize)
+diff = newSize - oldSize
+diffComment1 = f"{sizeof_fmt(diff, sign=True)} ({oldSizeText} -> {newSizeText})"
 if is_debug():
-    print("Old: {} bytes".format(os.stat(oldFile).st_size))
-    print("New: {} bytes".format(os.stat(newFile).st_size))
+    print("Old: {} bytes".format(oldSizeText))
+    print("New: {} bytes".format(newSizeText))
+    print("Diff: {} bytes".format(diffComment1))
+    print(diffComment1)
     print(" ".join(java_call))
+
+os.system(f"echo \"::set-output name=size-old-bytes::{oldSize}\"")
+os.system(f"echo \"::set-output name=size-old-text::{oldSizeText}\"")
+os.system(f"echo \"::set-output name=size-new-bytes::{newSize}\"")
+os.system(f"echo \"::set-output name=size-new-text::{newSizeText}\"")
+os.system(f"echo \"::set-output name=size-diff-comment_style_1::{diffComment1}\"")
 
 process = subprocess.Popen(java_call, stdout=subprocess.PIPE)
 out, _ = process.communicate()
@@ -100,7 +128,7 @@ github_output_limit = 4500
 
 for (title, content) in grouper(sections, 2):
     key = title.lower().strip().replace(" ", "-")
-    value = content.strip().replace("$", "_")
+    value = content.rstrip().lstrip("\n").replace("$", "_")
     if len(value) > github_output_limit:
         value = value[0:github_output_limit] + "\n...✂"
 
