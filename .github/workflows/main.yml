@@ -54,6 +54,9 @@ jobs:
             ```
             ${{ steps.diffuse.outputs.dex }}
             ```
+
+            `steps.diffuse.outputs.diff-gh-comment-all-collapsed`
+            ${{ steps.diffuse.outputs.diff-gh-comment-all-collapsed }}
           edit-mode: replace
           comment-id: ${{ steps.find_comment.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
@@ -116,6 +119,9 @@ jobs:
             ```
             ${{ steps.diffuse.outputs.dex }}
             ```
+
+            `steps.diffuse.outputs.diff-gh-comment-no-dex-all-collapsed`
+            ${{ steps.diffuse.outputs.diff-gh-comment-no-dex-all-collapsed }}
           edit-mode: replace
           comment-id: ${{ steps.find_comment.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}

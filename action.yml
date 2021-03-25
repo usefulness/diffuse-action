@@ -29,11 +29,17 @@ outputs:
     description: "Diffuse full output as file"
     value: ${{ steps.run-diffuse.outputs.diff-file }}
   diff-gh-comment:
-    description: "Diffuse full output as Github comment"
+    description: "Diffuse full output as Github comment. Summary in expanded state, other sections collapsed"
     value: ${{ steps.run-diffuse.outputs.diff-gh-comment }}
+  diff-gh-comment-all-collapsed:
+    description: "Diffuse full output as Github comment. All sections are collapsed"
+    value: ${{ steps.run-diffuse.outputs.diff-gh-comment-all-collapsed }}
   diff-gh-comment-no-dex:
-    description: "Diffuse full output as Github comment, without dex section, workaround forhttps://github.com/JakeWharton/diffuse/issues/96"
+    description: "Diffuse full output as Github comment, without dex section, workaround for https://github.com/JakeWharton/diffuse/issues/96"
     value: ${{ steps.run-diffuse.outputs.diff-gh-comment-no-dex }}
+  diff-gh-comment-no-dex-all-collapsed:
+    description: "Diffuse full output as Github comment all collapsed, without dex section, workaround for https://github.com/JakeWharton/diffuse/issues/96"
+    value: ${{ steps.run-diffuse.outputs.diff-gh-comment-no-dex-all-collapsed }}
   summary:
     description: "Diffuse summary"
     value: ${{ steps.run-diffuse.outputs.summary }}
