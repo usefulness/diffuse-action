@@ -43,16 +43,17 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     
-    - name: set up JDK 1.8
-      uses: actions/setup-java@v1
+    - name: set up JDK
+      uses: actions/setup-java@v2
       with:
-          java-version: 1.8
-          
-    - name: Cache .gradle
-      uses: burrunan/gradle-cache-action@v1
+        distribution: 'zulu'
+        java-version: 16
       
     - name: Build the apk
-      run: ./gradlew assembleDebug
+      uses: gradle/gradle-build-action@v1
+      with:
+        arguments: assembleDebug
+        dependencies-cache-enabled: true
 
     # Generating the diff starts here 👇 
 
@@ -115,15 +116,16 @@ jobs:
       - uses: actions/checkout@v2
       
       - name: set up JDK
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v2
         with:
-          java-version: 1.8
+          distribution: 'zulu'
+          java-version: 16
           
-      - name: Cache .gradle
-        uses: burrunan/gradle-cache-action@v1
-
       - name: Build the app
-        run: ./gradlew assembleDebug // difuse doesn't support obfuscated builds
+        uses: gradle/gradle-build-action@v1
+        with:
+          arguments: assembleDebug
+          dependencies-cache-enabled: true
 
       # Integration starts here 👇 
       
