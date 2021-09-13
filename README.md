@@ -44,9 +44,10 @@ jobs:
     - uses: actions/checkout@v2
     
     - name: set up JDK
-      uses: actions/setup-java@v1
+      uses: actions/setup-java@v2
       with:
-          java-version: 16
+        distribution: 'zulu'
+        java-version: 16
       
     - name: Build the apk
       uses: gradle/gradle-build-action@v1
@@ -115,15 +116,16 @@ jobs:
       - uses: actions/checkout@v2
       
       - name: set up JDK
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v2
         with:
+          distribution: 'zulu'
           java-version: 16
           
-    - name: Build the app
-      uses: gradle/gradle-build-action@v1
-      with:
-        arguments: assembleDebug
-        dependencies-cache-enabled: true
+      - name: Build the app
+        uses: gradle/gradle-build-action@v1
+        with:
+          arguments: assembleDebug
+          dependencies-cache-enabled: true
 
       # Integration starts here 👇 
       
