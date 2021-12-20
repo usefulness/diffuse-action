@@ -1,0 +1,8 @@
+{
+  "assignees": [
+    "mateuszkwiecinski"  
+  ],
+  "extends": [
+    "config:base"
+  ]
+}
