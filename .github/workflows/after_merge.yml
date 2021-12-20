@@ -11,9 +11,10 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: set up JDK
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v2
         with:
-          java-version: 11
+          java-version: 17
+          distribution: temurin
 
       - name: Get sample .apk for test purposes
         run: wget https://github.com/appium/appium/blob/906350fd335f9485376214fdd17c7cdb6c9ff26b/sample-code/apps/ApiDemos-debug.apk?raw=true -q -O sample-apk.apk
