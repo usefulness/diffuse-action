@@ -16,14 +16,14 @@ The work
     with:
       old-file-path: old/file/path/old_file.apk
       new-file-path: new/file/path/new_file.apk
-      lib-version: 0.1.0
+      fork-version: 0.2.0
 ```
 
 ##### Parameters
 `old-file-path` - Path to reference file the diff should be generated for  
 `new-file-path` - Path to current file the diff should be generated for  
 `lib-version` _(Optional)_ - Overrides [Diffuse](https://github.com/JakeWharton/diffuse) dependency version  
-`fork-version` _(Optional)_ - Uses [Diffuse](https://github.com/usefulness/diffuse) fork with a fiven version
+`fork-version` _(Optional)_ - Uses [Diffuse fork](https://github.com/usefulness/diffuse) with a given version
 
 ### Sample: Create Pull Request comment
 
@@ -44,17 +44,14 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     
-    - name: set up JDK
-      uses: actions/setup-java@v2
+    - uses: actions/setup-java@v2
       with:
-        distribution: 'zulu'
-        java-version: 16
+        distribution: 'temurin'
+        java-version: 17
       
-    - name: Build the apk
-      uses: gradle/gradle-build-action@v1
+    - uses: gradle/gradle-build-action@v2
       with:
         arguments: assembleDebug
-        dependencies-cache-enabled: true
 
     # Generating the diff starts here 👇 
 
@@ -116,17 +113,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       
-      - name: set up JDK
-        uses: actions/setup-java@v2
+      - uses: actions/setup-java@v2
         with:
-          distribution: 'zulu'
-          java-version: 16
+          distribution: 'temurin'
+          java-version: 17
           
-      - name: Build the app
-        uses: gradle/gradle-build-action@v1
+      - uses: gradle/gradle-build-action@v2
         with:
           arguments: assembleDebug
-          dependencies-cache-enabled: true
 
       # Integration starts here 👇 
       
