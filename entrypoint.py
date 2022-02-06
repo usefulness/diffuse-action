@@ -5,18 +5,28 @@ import subprocess
 from itertools import zip_longest
 
 
+def find_tool_url():
+    lib_version = os.getenv("INPUT_VERSION", "").strip()
+    if lib_version:
+        return "https://github.com/JakeWharton/diffuse/releases/download/{0}/diffuse-{0}-binary.jar" \
+            .format(lib_version)
+    else:
+        return "https://github.com/usefulness/diffuse/releases/download/{0}/diffuse-{0}-binary.jar" \
+            .format(os.getenv("INPUT_FORK_VERSION"))
+
+
 def is_debug():
     return os.getenv("INPUT_DEBUG", False)
 
 
-def github_output(message: str):
+def github_output(message):
     return message.replace("%", "%25") \
         .replace("\n", "%0A") \
         .replace("\r", "%0D") \
         .replace('\x00', '')
 
 
-def section(_title: str, _content: str):
+def section(_title, _content):
     return f"""
 <details>
   <summary>{_title}</summary>
@@ -29,7 +39,7 @@ def section(_title: str, _content: str):
 """
 
 
-def header(_content: str):
+def header(_content):
     return f"""
 \\`\\`\\`
 {_content}
@@ -56,8 +66,7 @@ def sizeof_fmt(num, suffix='B', sign=False):
         return "%.1f%s%s" % (num, 'Yi', suffix)
 
 
-url = "https://github.com/JakeWharton/diffuse/releases/download/{0}/diffuse-{0}-binary.jar" \
-    .format(os.getenv("INPUT_VERSION"))
+url = find_tool_url()
 downloadArgs = ""
 if not is_debug():
     downloadArgs += "-q"
@@ -156,4 +165,5 @@ os.system(f"echo \"::set-output name=diff-raw::{github_output(diff[0:github_outp
 os.system(f"echo \"::set-output name=diff-gh-comment::{github_output(github_comment)}\"")
 os.system(f"echo \"::set-output name=diff-gh-comment-all-collapsed::{github_output(github_comment_all_collapsed)}\"")
 os.system(f"echo \"::set-output name=diff-gh-comment-no-dex::{github_output(github_comment_no_dex)}\"")
-os.system(f"echo \"::set-output name=diff-gh-comment-no-dex-all-collapsed::{github_output(github_comment_no_dex_all_collapsed)}\"")
+os.system(
+    f"echo \"::set-output name=diff-gh-comment-no-dex-all-collapsed::{github_output(github_comment_no_dex_all_collapsed)}\"")
