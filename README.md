@@ -22,7 +22,8 @@ The work
 ##### Parameters
 `old-file-path` - Path to reference file the diff should be generated for  
 `new-file-path` - Path to current file the diff should be generated for  
-`lib-version` _(Optional)_ - Overrides [Diffuse](https://github.com/JakeWharton/diffuse) dependency version
+`lib-version` _(Optional)_ - Overrides [Diffuse](https://github.com/JakeWharton/diffuse) dependency version  
+`fork-version` _(Optional)_ - Uses [Diffuse](https://github.com/usefulness/diffuse) fork with a fiven version
 
 ### Sample: Create Pull Request comment
 
