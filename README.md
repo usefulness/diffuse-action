@@ -3,11 +3,11 @@
 
 Simple Github Action wrapper for Jake Wharton's [Diffuse](https://github.com/JakeWharton/diffuse) tool.
 
-## Usage 
+## Usage
 The action only exposes _output_ containing the diff, so to effectively consume its output it is highly recommended to use other Github Actions to customize your experience.
 
-### Usage:
-using diffuse fork - https://github.com/usefulness/diffuse  (using the fork is preferred due to: https://github.com/JakeWharton/diffuse/issues/111)
+### Configuration:
+using Diffuse fork - https://github.com/usefulness/diffuse  (using the fork is preferred due to: https://github.com/JakeWharton/diffuse/issues/111)
 ```
   - id: diffuse
     uses: usefulness/diffuse-action@v1
@@ -17,7 +17,7 @@ using diffuse fork - https://github.com/usefulness/diffuse  (using the fork is p
       fork-version: 0.3.0
 ```
 
-or using original diffuse binary
+or using original [Diffuse](https://github.com/JakeWharton/diffuse) binary
 ```
   - id: diffuse
     uses: usefulness/diffuse-action@v1
@@ -30,13 +30,19 @@ or using original diffuse binary
 ##### Parameters
 `old-file-path` - Path to reference file the diff should be generated for  
 `new-file-path` - Path to current file the diff should be generated for  
-`lib-version` _(Optional)_ - Overrides [Diffuse](https://github.com/JakeWharton/diffuse) dependency version  
-`fork-version` _(Optional)_ - Uses [Diffuse fork](https://github.com/usefulness/diffuse) with a given version
+`lib-version` _(Optional)_ - Overrides https://github.com/JakeWharton/diffuse dependency version  
+`fork-version` _(Optional)_ - Overrides https://github.com/usefulness/diffuse with a given version  
+
+If neither `lib-version` nor `fork-version` is passed the action will use latest version of the [fork](https://github.com/usefulness/diffuse)
+
+##### Outputs
+See full list of [outputs](https://github.com/usefulness/diffuse-action/blob/master/action.yml#L27).  
+For example: referencing `steps.diffuse.outputs.diff-gh-comment` at a later stage will print Diffuse tool output as a nicely formatted github comment
 
 ### Sample: Create Pull Request comment
 
-TODO: explain why to use actions/cache for now and its limitation  
-good explanation: https://github.com/JakeWharton/dependency-tree-diff/discussions/8#discussioncomment-1535744
+TODO: explain why to use free `actions/cache` for now and list its limitation.  
+Good introduction to the problem: https://github.com/JakeWharton/dependency-tree-diff/discussions/8#discussioncomment-1535744
 
 1. Integrate with a regular Pull Request workflow:
 
@@ -60,7 +66,7 @@ jobs:
       
     - uses: gradle/gradle-build-action@v2
       with:
-        arguments: assembleDebug
+        arguments: assemble
 
     # Generating the diff starts here 👇 
 
@@ -114,6 +120,8 @@ on:
       - develop
       - maine
       - mane
+  schedule:
+    - cron: '0 3 * * 1,4'
 
 jobs:
   diffuse_cache:
@@ -129,7 +137,7 @@ jobs:
           
       - uses: gradle/gradle-build-action@v2
         with:
-          arguments: assembleDebug
+          arguments: assemble
 
       # Integration starts here 👇 
       
@@ -140,13 +148,12 @@ jobs:
           key: diffuse-${{ github.sha }}
 
       # Copy your build artifact under `diffuse-source-file` name which will be saved in cache
-      - run: cp sample-apk.apk diffuse-source-file 
+      - run: cp /app/build/outputs/debug/sample-apk.apk diffuse-source-file 
         shell: bash
-
 ``` 
 
 
-### More samples
+### More examples
 
 Sample application as a [pull request comment](https://github.com/mateuszkwiecinski/github_browser/pull/52)  
 Corresponding [workflow](https://github.com/mateuszkwiecinski/github_browser/blob/master/.github/workflows/run_diffuse.yml) file  
