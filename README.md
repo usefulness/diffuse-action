@@ -7,7 +7,7 @@ Simple Github Action wrapper for Jake Wharton's [Diffuse](https://github.com/Jak
 The action only exposes _output_ containing the diff, so to effectively consume its output it is highly recommended to use other Github Actions to customize your experience.
 
 ### Usage:
-
+using diffuse fork - https://github.com/usefulness/diffuse  (using the fork is preferred due to: https://github.com/JakeWharton/diffuse/issues/111)
 ```
   - id: diffuse
     uses: usefulness/diffuse-action@v1
@@ -15,6 +15,16 @@ The action only exposes _output_ containing the diff, so to effectively consume 
       old-file-path: old/file/path/old_file.apk
       new-file-path: new/file/path/new_file.apk
       fork-version: 0.3.0
+```
+
+or using original diffuse binary
+```
+  - id: diffuse
+    uses: usefulness/diffuse-action@v1
+    with:
+      old-file-path: old/file/path/old_file.apk
+      new-file-path: new/file/path/new_file.apk
+      lib-version: 0.1.0
 ```
 
 ##### Parameters
@@ -25,7 +35,7 @@ The action only exposes _output_ containing the diff, so to effectively consume 
 
 ### Sample: Create Pull Request comment
 
-TODO: explain why to use actions/cache for now and its limitation
+TODO: explain why to use actions/cache for now and its limitation  
 good explanation: https://github.com/JakeWharton/dependency-tree-diff/discussions/8#discussioncomment-1535744
 
 1. Integrate with a regular Pull Request workflow:
