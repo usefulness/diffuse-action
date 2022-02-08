@@ -19,7 +19,7 @@ inputs:
   fork-version:
     description: 'usefulness/diffuse fork version'
     required: false
-    default: '0.2.0'
+    default: '0.3.0'
   debug:
     description: 'if true, shows additional debug information'
     required: false
