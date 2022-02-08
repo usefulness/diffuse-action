@@ -6,8 +6,6 @@ Simple Github Action wrapper for Jake Wharton's [Diffuse](https://github.com/Jak
 ## Usage 
 The action only exposes _output_ containing the diff, so to effectively consume its output it is highly recommended to use other Github Actions to customize your experience.
 
-The work
-
 ### Usage:
 
 ```
@@ -16,7 +14,7 @@ The work
     with:
       old-file-path: old/file/path/old_file.apk
       new-file-path: new/file/path/new_file.apk
-      fork-version: 0.2.0
+      fork-version: 0.3.0
 ```
 
 ##### Parameters
@@ -28,6 +26,7 @@ The work
 ### Sample: Create Pull Request comment
 
 TODO: explain why to use actions/cache for now and its limitation
+good explanation: https://github.com/JakeWharton/dependency-tree-diff/discussions/8#discussioncomment-1535744
 
 1. Integrate with a regular Pull Request workflow:
 
