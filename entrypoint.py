@@ -2,36 +2,28 @@
 import os
 import re
 import subprocess
+import requests
+import json
 from itertools import zip_longest
+
+
+def find_tool_version(owner, diffuse_version):
+    if diffuse_version == "latest":
+        response = requests.get("https://api.github.com/repos/{0}/diffuse/releases/latest".format(owner))
+        parsed = json.loads(response.content)
+
+        return parsed["assets"][0]["browser_download_url"]
+    else:
+        return "https://github.com/{0}/diffuse/releases/download/{1}/diffuse-{1}-binary.jar" \
+            .format(owner, diffuse_version)
 
 
 def find_tool_url():
     lib_version = os.getenv("INPUT_LIB_VERSION", "").strip()
     if lib_version:
-        if lib_version == "latest":
-            return os.popen(
-                f"curl -s https://api.github.com/repos/JakeWharton/diffuse/releases/latest "
-                f"| grep browser_download_url "
-                f"| cut -d '\"' -f 4"
-            ) \
-                .read() \
-                .strip()
-        else:
-            return "https://github.com/JakeWharton/diffuse/releases/download/{0}/diffuse-{0}-binary.jar" \
-                .format(lib_version)
+        return find_tool_version("JakeWharton", lib_version)
     else:
-        fork_version = os.getenv("INPUT_FORK_VERSION", "").strip()
-        if fork_version == "latest":
-            return os.popen(
-                f"curl -s https://api.github.com/repos/usefulness/diffuse/releases/latest "
-                f"| grep browser_download_url "
-                f"| cut -d '\"' -f 4"
-            ) \
-                .read() \
-                .strip()
-        else:
-            return "https://github.com/usefulness/diffuse/releases/download/{0}/diffuse-{0}-binary.jar" \
-                .format(fork_version)
+        return find_tool_version("usefulness", os.getenv("INPUT_FORK_VERSION", "").strip())
 
 
 def is_debug():
