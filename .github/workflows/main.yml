@@ -173,7 +173,8 @@ jobs:
         with:
           old-file-path: old-apk.apk
           new-file-path: new-apk.apk
-          lib-version: latest
+          lib-version: 0.1.0
+          diffuse-repo: JakeWharton/diffuse
           debug: true
 
       - uses: actions/upload-artifact@v2
@@ -211,7 +212,8 @@ jobs:
           old-file-path: very-old-apk.apk
           new-file-path: new-apk.apk
           debug: true
-          fork-version: latest
+          lib-version: latest
+          diffuse-repo: JakeWharton/diffuse
 
       - uses: actions/upload-artifact@v2
         with:
