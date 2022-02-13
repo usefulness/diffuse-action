@@ -143,3 +143,77 @@ jobs:
         with:
           name: diffuse-output-2
           path: ${{ steps.diffuse.outputs.diff-file }}
+
+  test-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: 17
+          distribution: temurin
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - run: python -m pip install requests
+
+      - name: Get old version of Andorid Auto app for test purposes
+        run: curl.exe --output old-apk.apk "https://github.com/usefulness/storage/raw/master/android-auto-old.apk"
+
+      - name: Get new version of Andorid Auto app for test purposes
+        run: curl.exe --output new-apk.apk "https://github.com/usefulness/storage/raw/master/android-auto-new.apk"
+
+      - id: diffuse
+        uses: ./
+        if: ${{ false }}  # diffuse isn't compatible with windows
+        with:
+          old-file-path: old-apk.apk
+          new-file-path: new-apk.apk
+          lib-version: latest
+          debug: true
+
+      - uses: actions/upload-artifact@v2
+        if: ${{ false }}  # diffuse isn't compatible with windows
+        with:
+          name: diffuse-output-3
+          path: ${{ steps.diffuse.outputs.diff-file }}
+
+  test-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: 17
+          distribution: temurin
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - run: python -m pip install requests
+
+      - name: Get very old version of Andorid Auto app for test purposes
+        run: wget "https://github.com/usefulness/storage/raw/master/android-auto-very-old.apk" -O very-old-apk.apk
+
+      - name: Get new version of Andorid Auto app for test purposes
+        run: wget "https://github.com/usefulness/storage/raw/master/android-auto-new.apk" -O new-apk.apk
+
+      - id: diffuse
+        uses: ./
+        with:
+          old-file-path: very-old-apk.apk
+          new-file-path: new-apk.apk
+          debug: true
+          fork-version: latest
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: diffuse-output-4
+          path: ${{ steps.diffuse.outputs.diff-file }}

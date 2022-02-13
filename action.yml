@@ -19,11 +19,13 @@ inputs:
   fork-version:
     description: 'usefulness/diffuse fork version, in the same format as referenced on corresponding releases page https://github.com/usefulness/diffuse/releases, e.g "0.3.0" or "latest"'
     required: false
-    default: 'latest'
   debug:
     description: 'if true, shows additional debug information'
     required: false
     default: 'false'
+  token:
+    description: 'GITHUB_TOKEN or a repo scoped PAT.'
+    default: ${{ github.token }}
 outputs:
   diff-raw:
     description: "Diffuse full output"
@@ -96,5 +98,6 @@ runs:
         INPUT_LIB_VERSION: ${{ inputs.lib-version }}
         INPUT_FORK_VERSION: ${{ inputs.fork-version }}
         INPUT_DEBUG: ${{ inputs.debug }}
-      run: python3 ${{ github.action_path }}/entrypoint.py
+        INPUT_GITHUB_TOKEN: ${{ inputs.token }}
+      run: python3 '${{ github.action_path }}'/entrypoint.py
       shell: bash

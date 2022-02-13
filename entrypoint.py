@@ -9,7 +9,18 @@ from itertools import zip_longest
 
 def find_tool_version(owner, diffuse_version):
     if diffuse_version == "latest":
-        response = requests.get("https://api.github.com/repos/{0}/diffuse/releases/latest".format(owner))
+        response = requests.get(
+            "https://api.github.com/repos/{0}/diffuse/releases/latest".format(owner),
+            headers={
+                "Content-Type": "application/vnd.github.v3+json",
+                "Content-Type": "application/vnd.github.v3+json"
+            }
+        )
+        if is_debug():
+            print("X-RateLimit-Limit: {0}".format(response.headers["X-RateLimit-Limit"]))
+            print("X-RateLimit-Used: {0}".format(response.headers["X-RateLimit-Used"]))
+            print("X-RateLimit-Remaining: {0}".format(response.headers["X-RateLimit-Remaining"]))
+
         parsed = json.loads(response.content)
 
         return parsed["assets"][0]["browser_download_url"]
@@ -20,10 +31,13 @@ def find_tool_version(owner, diffuse_version):
 
 def find_tool_url():
     lib_version = os.getenv("INPUT_LIB_VERSION", "").strip()
+    fork_version = os.getenv("INPUT_FORK_VERSION", "").strip()
     if lib_version:
         return find_tool_version("JakeWharton", lib_version)
+    elif fork_version:
+        return find_tool_version("usefulness", fork_version)
     else:
-        return find_tool_version("usefulness", os.getenv("INPUT_FORK_VERSION", "").strip())
+        return find_tool_version("usefulness", "latest")
 
 
 def is_debug():
