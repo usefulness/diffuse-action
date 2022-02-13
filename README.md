@@ -16,7 +16,7 @@ By default, this action uses Diffuse fork - https://github.com/usefulness/diffus
       new-file-path: new/file/path/new_file.apk
 ```
 
-You can override to use the original [Diffuse](https://github.com/JakeWharton/diffuse) binary
+You can override the config to use the original [Diffuse](https://github.com/JakeWharton/diffuse) binary
 ```
   - id: diffuse
     uses: usefulness/diffuse-action@v1
@@ -31,7 +31,7 @@ You can override to use the original [Diffuse](https://github.com/JakeWharton/di
 `old-file-path` - Path to reference file the diff should be generated for  
 `new-file-path` - Path to current file the diff should be generated for  
 `lib-version` _(Optional)_ - Overrides dependency version, by default uses the latest published version  
-`diffuse-repo` _(Optional)_ - Overrides [usefulness/diffuse](https://github.com/usefulness/diffuse) as the default repository containing published as release artifacts.   
+`diffuse-repo` _(Optional)_ - Overrides [usefulness/diffuse](https://github.com/usefulness/diffuse) as the default repository containing published release artifacts.   
 
 ##### Outputs
 See full list of [outputs](https://github.com/usefulness/diffuse-action/blob/master/action.yml#L27).  
