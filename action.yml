@@ -14,16 +14,18 @@ inputs:
     description: 'new mapping file produced by R8 or ProGuard'
     required: false
   lib-version:
-    description: 'JakeWharton/diffuse tool version, e.g "0.1.0"'
-    required: false
-  fork-version:
-    description: 'usefulness/diffuse fork version, in the same format as referenced on corresponding releases page https://github.com/usefulness/diffuse/releases, e.g "0.3.0" or "latest"'
-    required: false
-    default: 'latest'
+    description: 'release version, e.g "0.1.0" or "latest"'
+    default: latest
+    required: true
+  diffuse-repo:
+    description: 'Diffuse repo id, with published release artifacts, e.g "usefulness/diffuse" or "JakeWharton/diffuse"'
+    required: true
+    default: usefulness/diffuse
   debug:
     description: 'if true, shows additional debug information'
     required: false
     default: 'false'
+
 outputs:
   diff-raw:
     description: "Diffuse full output"
@@ -94,7 +96,8 @@ runs:
         INPUT_OLD_MAPPING_FILE: ${{ inputs.old-mapping-path }}
         INPUT_NEW_MAPPING_FILE: ${{ inputs.new-mapping-path }}
         INPUT_LIB_VERSION: ${{ inputs.lib-version }}
-        INPUT_FORK_VERSION: ${{ inputs.fork-version }}
+        INPUT_DIFFUSE_REPO: ${{ inputs.diffuse-repo }}
         INPUT_DEBUG: ${{ inputs.debug }}
-      run: python3 ${{ github.action_path }}/entrypoint.py
+        INPUT_GITHUB_TOKEN: ${{ github.token }}
+      run: python3 '${{ github.action_path }}'/entrypoint.py
       shell: bash

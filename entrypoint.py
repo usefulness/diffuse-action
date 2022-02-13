@@ -2,36 +2,39 @@
 import os
 import re
 import subprocess
+import requests
+import json
 from itertools import zip_longest
 
 
 def find_tool_url():
     lib_version = os.getenv("INPUT_LIB_VERSION", "").strip()
-    if lib_version:
-        if lib_version == "latest":
-            return os.popen(
-                f"curl -s https://api.github.com/repos/JakeWharton/diffuse/releases/latest "
-                f"| grep browser_download_url "
-                f"| cut -d '\"' -f 4"
-            ) \
-                .read() \
-                .strip()
-        else:
-            return "https://github.com/JakeWharton/diffuse/releases/download/{0}/diffuse-{0}-binary.jar" \
-                .format(lib_version)
+    diffuse_repo = os.getenv("INPUT_DIFFUSE_REPO", "").strip()
+    if not diffuse_repo:
+        raise RuntimeError("You must provide valid `diffuse-repo` input")
+    if not lib_version:
+        raise RuntimeError("You must provide valid `lib-version` input")
+
+    if lib_version == "latest":
+        response = requests.get(
+            "https://api.github.com/repos/{0}/releases/latest".format(diffuse_repo),
+            headers={
+                "Content-Type": "application/vnd.github.v3+json",
+                "Authorization": "token {0}".format(os.getenv("INPUT_GITHUB_TOKEN", ""))
+            }
+        )
+
+        if is_debug():
+            print("X-RateLimit-Limit: {0}".format(response.headers["X-RateLimit-Limit"]))
+            print("X-RateLimit-Used: {0}".format(response.headers["X-RateLimit-Used"]))
+            print("X-RateLimit-Remaining: {0}".format(response.headers["X-RateLimit-Remaining"]))
+
+        parsed = json.loads(response.content)
+
+        return parsed["assets"][0]["browser_download_url"]
     else:
-        fork_version = os.getenv("INPUT_FORK_VERSION", "").strip()
-        if fork_version == "latest":
-            return os.popen(
-                f"curl -s https://api.github.com/repos/usefulness/diffuse/releases/latest "
-                f"| grep browser_download_url "
-                f"| cut -d '\"' -f 4"
-            ) \
-                .read() \
-                .strip()
-        else:
-            return "https://github.com/usefulness/diffuse/releases/download/{0}/diffuse-{0}-binary.jar" \
-                .format(fork_version)
+        return "https://github.com/{0}/releases/download/{1}/diffuse-{1}-binary.jar" \
+            .format(diffuse_repo, lib_version)
 
 
 def is_debug():

@@ -7,33 +7,31 @@ Simple Github Action wrapper for Jake Wharton's [Diffuse](https://github.com/Jak
 The action only exposes _output_ containing the diff, so to effectively consume its output it is highly recommended to use other Github Actions to customize your experience.
 
 ### Configuration:
-using Diffuse fork - https://github.com/usefulness/diffuse  (using the fork is preferred due to: https://github.com/JakeWharton/diffuse/issues/111)
+By default, this action uses Diffuse fork - https://github.com/usefulness/diffuse (due to: https://github.com/JakeWharton/diffuse/issues/111)
 ```
   - id: diffuse
     uses: usefulness/diffuse-action@v1
     with:
       old-file-path: old/file/path/old_file.apk
       new-file-path: new/file/path/new_file.apk
-      fork-version: 0.3.0
 ```
 
-or using original [Diffuse](https://github.com/JakeWharton/diffuse) binary
+You can override to use the original [Diffuse](https://github.com/JakeWharton/diffuse) binary
 ```
   - id: diffuse
     uses: usefulness/diffuse-action@v1
     with:
       old-file-path: old/file/path/old_file.apk
       new-file-path: new/file/path/new_file.apk
+      diffuse-repo: JakeWharton/diffuse
       lib-version: 0.1.0
 ```
 
 ##### Parameters
 `old-file-path` - Path to reference file the diff should be generated for  
 `new-file-path` - Path to current file the diff should be generated for  
-`lib-version` _(Optional)_ - Overrides https://github.com/JakeWharton/diffuse dependency version  
-`fork-version` _(Optional)_ - Overrides https://github.com/usefulness/diffuse with a given version  
-
-If neither `lib-version` nor `fork-version` is passed the action will use latest version of the [fork](https://github.com/usefulness/diffuse)
+`lib-version` _(Optional)_ - Overrides dependency version, by default uses the latest published version  
+`diffuse-repo` _(Optional)_ - Overrides [usefulness/diffuse](https://github.com/usefulness/diffuse) as the default repository containing published as release artifacts.   
 
 ##### Outputs
 See full list of [outputs](https://github.com/usefulness/diffuse-action/blob/master/action.yml#L27).  
