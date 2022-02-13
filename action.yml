@@ -14,12 +14,12 @@ inputs:
     description: 'new mapping file produced by R8 or ProGuard'
     required: false
   lib-version:
-    description: 'JakeWharton/diffuse tool version'
+    description: 'JakeWharton/diffuse tool version, e.g "0.1.0"'
     required: false
   fork-version:
-    description: 'usefulness/diffuse fork version'
+    description: 'usefulness/diffuse fork version, in the same format as referenced on corresponding releases page https://github.com/usefulness/diffuse/releases, e.g "0.3.0" or "latest"'
     required: false
-    default: '0.3.0'
+    default: 'latest'
   debug:
     description: 'if true, shows additional debug information'
     required: false
@@ -93,7 +93,7 @@ runs:
         INPUT_NEW_FILE: ${{ inputs.new-file-path }}
         INPUT_OLD_MAPPING_FILE: ${{ inputs.old-mapping-path }}
         INPUT_NEW_MAPPING_FILE: ${{ inputs.new-mapping-path }}
-        INPUT_VERSION: ${{ inputs.lib-version }}
+        INPUT_LIB_VERSION: ${{ inputs.lib-version }}
         INPUT_FORK_VERSION: ${{ inputs.fork-version }}
         INPUT_DEBUG: ${{ inputs.debug }}
       run: python3 ${{ github.action_path }}/entrypoint.py

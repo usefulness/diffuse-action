@@ -6,13 +6,32 @@ from itertools import zip_longest
 
 
 def find_tool_url():
-    lib_version = os.getenv("INPUT_VERSION", "").strip()
+    lib_version = os.getenv("INPUT_LIB_VERSION", "").strip()
     if lib_version:
-        return "https://github.com/JakeWharton/diffuse/releases/download/{0}/diffuse-{0}-binary.jar" \
-            .format(lib_version)
+        if lib_version == "latest":
+            return os.popen(
+                f"curl -s https://api.github.com/repos/JakeWharton/diffuse/releases/latest "
+                f"| grep browser_download_url "
+                f"| cut -d '\"' -f 4"
+            ) \
+                .read() \
+                .strip()
+        else:
+            return "https://github.com/JakeWharton/diffuse/releases/download/{0}/diffuse-{0}-binary.jar" \
+                .format(lib_version)
     else:
-        return "https://github.com/usefulness/diffuse/releases/download/{0}/diffuse-{0}-binary.jar" \
-            .format(os.getenv("INPUT_FORK_VERSION"))
+        fork_version = os.getenv("INPUT_FORK_VERSION", "").strip()
+        if fork_version == "latest":
+            return os.popen(
+                f"curl -s https://api.github.com/repos/usefulness/diffuse/releases/latest "
+                f"| grep browser_download_url "
+                f"| cut -d '\"' -f 4"
+            ) \
+                .read() \
+                .strip()
+        else:
+            return "https://github.com/usefulness/diffuse/releases/download/{0}/diffuse-{0}-binary.jar" \
+                .format(fork_version)
 
 
 def is_debug():
@@ -67,6 +86,9 @@ def sizeof_fmt(num, suffix='B', sign=False):
 
 
 url = find_tool_url()
+if is_debug():
+    print("url of the tool: {}".format(url))
+
 downloadArgs = ""
 if not is_debug():
     downloadArgs += "-q"
