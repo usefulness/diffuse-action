@@ -68,7 +68,7 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: diffuse-output-1
           path: ${{ steps.diffuse.outputs.diff-file }}
@@ -139,7 +139,7 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: diffuse-output-2
           path: ${{ steps.diffuse.outputs.diff-file }}
@@ -177,7 +177,7 @@ jobs:
           diffuse-repo: JakeWharton/diffuse
           debug: true
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         if: ${{ false }}  # diffuse isn't compatible with windows
         with:
           name: diffuse-output-3
@@ -215,7 +215,7 @@ jobs:
           lib-version: latest
           diffuse-repo: JakeWharton/diffuse
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: diffuse-output-4
           path: ${{ steps.diffuse.outputs.diff-file }}
