@@ -45,7 +45,8 @@ def github_output(message):
     return message.replace("%", "%25") \
         .replace("\n", "%0A") \
         .replace("\r", "%0D") \
-        .replace('\x00', '')
+        .replace('\x00', '') \
+        .replace("\"", "")
 
 
 def section(_title, _content):
@@ -162,7 +163,7 @@ github_output_limit = 4500
 
 for (title, content) in grouper(sections, 2):
     key = title.lower().strip().replace(" ", "-")
-    value = content.rstrip().lstrip("\n").replace("$", "_")
+    value = content.rstrip().lstrip("\n").replace("$", "_").replace("`", "")
     if len(value) > github_output_limit:
         value = value[0:github_output_limit] + "\n...✂"
 
