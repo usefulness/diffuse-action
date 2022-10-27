@@ -4,6 +4,7 @@ import re
 import subprocess
 import requests
 import json
+import uuid
 from itertools import zip_longest
 
 
@@ -41,12 +42,17 @@ def is_debug():
     return os.getenv("INPUT_DEBUG", False)
 
 
-def github_output(message):
-    return message.replace("%", "%25") \
-        .replace("\n", "%0A") \
-        .replace("\r", "%0D") \
-        .replace('\x00', '') \
+def _escape(message):
+    return message.replace('\x00', '') \
         .replace("\"", "")
+
+
+def github_output(key, message):
+    delimiter = str(uuid.uuid4())
+
+    os.system(f"echo \"{key}<<${delimiter}\" >> $GITHUB_OUTPUT")
+    os.system(f"echo \"{_escape(message)}\" >> $GITHUB_OUTPUT")
+    os.system(f"echo \"${delimiter}\" >> $GITHUB_OUTPUT")
 
 
 def section(_title, _content):
@@ -132,11 +138,11 @@ if is_debug():
     print(diffComment1)
     print(" ".join(java_call))
 
-os.system(f"echo \"::set-output name=size-old-bytes::{oldSize}\"")
-os.system(f"echo \"::set-output name=size-old-text::{oldSizeText}\"")
-os.system(f"echo \"::set-output name=size-new-bytes::{newSize}\"")
-os.system(f"echo \"::set-output name=size-new-text::{newSizeText}\"")
-os.system(f"echo \"::set-output name=size-diff-comment_style_1::{diffComment1}\"")
+os.system(f"echo \"size-old-bytes={oldSize}\" >> $GITHUB_OUTPUT")
+os.system(f"echo \"size-old-text={oldSizeText}\" >> $GITHUB_OUTPUT")
+os.system(f"echo \"size-new-bytes={newSize}\" >> $GITHUB_OUTPUT")
+os.system(f"echo \"size-new-text={newSizeText}\" >> $GITHUB_OUTPUT")
+os.system(f"echo \"size-diff-comment_style_1={diffComment1}\" >> $GITHUB_OUTPUT")
 
 process = subprocess.Popen(java_call, stdout=subprocess.PIPE)
 out, _ = process.communicate()
@@ -167,7 +173,7 @@ for (title, content) in grouper(sections, 2):
     if len(value) > github_output_limit:
         value = value[0:github_output_limit] + "\n...✂"
 
-    os.system("echo \"::set-output name={}::{}\"".format(key, github_output(value)))
+    github_output(key, value)
     if key == "summary":
         github_comment += header(value)
         github_comment_no_dex += header(value)
@@ -186,10 +192,10 @@ output.close()
 outputPath = os.path.realpath(output.name)
 if is_debug():
     print(f"Full output stored in: {outputPath}")
-os.system(f"echo \"::set-output name=diff-file::{outputPath}\"")
-os.system(f"echo \"::set-output name=diff-raw::{github_output(diff[0:github_output_limit])}\"")
-os.system(f"echo \"::set-output name=diff-gh-comment::{github_output(github_comment)}\"")
-os.system(f"echo \"::set-output name=diff-gh-comment-all-collapsed::{github_output(github_comment_all_collapsed)}\"")
-os.system(f"echo \"::set-output name=diff-gh-comment-no-dex::{github_output(github_comment_no_dex)}\"")
-os.system(
-    f"echo \"::set-output name=diff-gh-comment-no-dex-all-collapsed::{github_output(github_comment_no_dex_all_collapsed)}\"")
+
+github_output("diff-file", outputPath)
+github_output("diff-raw", diff[0:github_output_limit])
+github_output("diff-gh-comment", github_comment)
+github_output("diff-gh-comment-all-collapsed", github_comment_all_collapsed)
+github_output("diff-gh-comment-no-dex", github_comment_no_dex)
+github_output("diff-gh-comment-no-dex-all-collapsed", github_comment_no_dex_all_collapsed)
