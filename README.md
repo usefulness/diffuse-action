@@ -60,7 +60,7 @@ jobs:
     - uses: actions/setup-java@v2
       with:
         distribution: 'temurin'
-        java-version: 20
+        java-version: 21
       
     - uses: gradle/gradle-build-action@v2
       with:
@@ -131,7 +131,7 @@ jobs:
       - uses: actions/setup-java@v2
         with:
           distribution: 'temurin'
-          java-version: 20
+          java-version: 21
           
       - uses: gradle/gradle-build-action@v2
         with:
