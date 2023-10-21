@@ -11,7 +11,7 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: temurin
-          java-version: 20
+          java-version: 21
 
       - name: Get old version of Andorid Auto app for test purposes
         run: wget "https://github.com/usefulness/storage/raw/master/android-auto-old.apk" -O old-apk.apk
@@ -81,7 +81,7 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: temurin
-          java-version: 20
+          java-version: 21
 
       - name: Get very old version of Andorid Auto app for test purposes
         run: wget "https://github.com/usefulness/storage/raw/master/android-auto-very-old.apk" -O very-old-apk.apk
@@ -150,7 +150,7 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: temurin
-          java-version: 20
+          java-version: 21
 
       - uses: actions/setup-python@v4
         with:
@@ -188,7 +188,7 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: temurin
-          java-version: 20
+          java-version: 21
 
       - uses: actions/setup-python@v4
         with:
