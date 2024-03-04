@@ -5,37 +5,40 @@ import subprocess
 import requests
 import json
 import uuid
+import zipfile
+import stat
 from itertools import zip_longest
 
 
-def find_tool_url():
-    lib_version = os.getenv("INPUT_LIB_VERSION", "").strip()
+def find_tool_coordinates():
+    input_lib_version = os.getenv("INPUT_LIB_VERSION", "").strip()
     diffuse_repo = os.getenv("INPUT_DIFFUSE_REPO", "").strip()
     if not diffuse_repo:
         raise RuntimeError("You must provide valid `diffuse-repo` input")
-    if not lib_version:
+    if not input_lib_version:
         raise RuntimeError("You must provide valid `lib-version` input")
 
-    if lib_version == "latest":
-        response = requests.get(
-            "https://api.github.com/repos/{0}/releases/latest".format(diffuse_repo),
-            headers={
-                "Content-Type": "application/vnd.github.v3+json",
-                "Authorization": "token {0}".format(os.getenv("INPUT_GITHUB_TOKEN", ""))
-            }
-        )
-
-        if is_debug():
-            print("X-RateLimit-Limit: {0}".format(response.headers["X-RateLimit-Limit"]))
-            print("X-RateLimit-Used: {0}".format(response.headers["X-RateLimit-Used"]))
-            print("X-RateLimit-Remaining: {0}".format(response.headers["X-RateLimit-Remaining"]))
-
-        parsed = json.loads(response.content)
-
-        return parsed["assets"][0]["browser_download_url"]
+    if input_lib_version == "latest":
+        request_url = "https://api.github.com/repos/{0}/releases/latest".format(diffuse_repo)
     else:
-        return "https://github.com/{0}/releases/download/{1}/diffuse-{1}-binary.jar" \
-            .format(diffuse_repo, lib_version)
+        request_url = "https://api.github.com/repos/{0}/releases/tags/{1}".format(diffuse_repo, input_lib_version)
+
+    response = requests.get(
+        request_url,
+        headers={
+            "Content-Type": "application/vnd.github.v3+json",
+            "Authorization": "token {0}".format(os.getenv("INPUT_GITHUB_TOKEN", ""))
+        }
+    )
+
+    if is_debug():
+        print("X-RateLimit-Limit: {0}".format(response.headers["X-RateLimit-Limit"]))
+        print("X-RateLimit-Used: {0}".format(response.headers["X-RateLimit-Used"]))
+        print("X-RateLimit-Remaining: {0}".format(response.headers["X-RateLimit-Remaining"]))
+
+    parsed = json.loads(response.content)
+
+    return parsed["assets"][0]["browser_download_url"], parsed["tag_name"]
 
 
 def is_debug():
@@ -95,16 +98,31 @@ def sizeof_fmt(num, suffix='B', sign=False):
         return "%.1f%s%s" % (num, 'Yi', suffix)
 
 
-url = find_tool_url()
+url, lib_version = find_tool_coordinates()
 if is_debug():
     print("url of the tool: {}".format(url))
 
 downloadArgs = ""
 if not is_debug():
     downloadArgs += "-q"
-os.system(f"wget \"{url}\" {downloadArgs} -O diffuse.jar")
 
-java_call = ["java", "-jar", "diffuse.jar", "diff"]
+if url.endswith(".jar"):
+    os.system(f"wget \"{url}\" {downloadArgs} -O diffuse.jar")
+    exec_call = ["java", "-jar", "diffuse.jar"]
+else:
+    os.system(f"wget \"{url}\" {downloadArgs} -O diffuse.zip")
+    with zipfile.ZipFile("diffuse.zip", "r") as zip_ref:
+        zip_ref.extractall("diffuse_extracted")
+
+    if os.name == "nt":
+        executable_name = "diffuse.bat"
+    else:
+        executable_name = "diffuse"
+    runnable = f"diffuse_extracted/diffuse-{lib_version}/bin/{executable_name}"
+    st = os.stat("diffuse_extracted")
+    os.chmod(runnable, st.st_mode | stat.S_IEXEC)
+    exec_call = [runnable]
+exec_call.append("diff")
 
 oldFile = os.getenv("INPUT_OLD_FILE")
 newFile = os.getenv("INPUT_NEW_FILE")
@@ -116,14 +134,14 @@ typeSelector = {
     ".jar": "--jar",
 }
 path, file_extension = os.path.splitext(newFile)
-java_call.append(typeSelector.get(file_extension))
-java_call.append(oldFile)
-java_call.append(newFile)
+exec_call.append(typeSelector.get(file_extension))
+exec_call.append(oldFile)
+exec_call.append(newFile)
 
 if os.getenv("INPUT_OLD_MAPPING_FILE").strip():
-    java_call.extend(["--old-mapping", os.getenv("INPUT_OLD_MAPPING_FILE")])
+    exec_call.extend(["--old-mapping", os.getenv("INPUT_OLD_MAPPING_FILE")])
 if os.getenv("INPUT_NEW_MAPPING_FILE").strip():
-    java_call.extend(["--new-mapping", os.getenv("INPUT_NEW_MAPPING_FILE")])
+    exec_call.extend(["--new-mapping", os.getenv("INPUT_NEW_MAPPING_FILE")])
 
 oldSize = os.stat(oldFile).st_size
 oldSizeText = sizeof_fmt(oldSize)
@@ -136,7 +154,7 @@ if is_debug():
     print("New: {} bytes".format(newSizeText))
     print("Diff: {} bytes".format(diffComment1))
     print(diffComment1)
-    print(" ".join(java_call))
+    print(" ".join(exec_call))
 
 os.system(f"echo \"size-old-bytes={oldSize}\" >> $GITHUB_OUTPUT")
 os.system(f"echo \"size-old-text={oldSizeText}\" >> $GITHUB_OUTPUT")
@@ -144,7 +162,7 @@ os.system(f"echo \"size-new-bytes={newSize}\" >> $GITHUB_OUTPUT")
 os.system(f"echo \"size-new-text={newSizeText}\" >> $GITHUB_OUTPUT")
 os.system(f"echo \"size-diff-comment_style_1={diffComment1}\" >> $GITHUB_OUTPUT")
 
-process = subprocess.Popen(java_call, stdout=subprocess.PIPE)
+process = subprocess.Popen(exec_call, stdout=subprocess.PIPE)
 out, _ = process.communicate()
 
 if process.returncode != 0:
