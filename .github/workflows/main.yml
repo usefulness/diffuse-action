@@ -166,7 +166,6 @@ jobs:
 
       - id: diffuse
         uses: ./
-        if: ${{ false }}  # diffuse isn't compatible with windows
         with:
           old-file-path: old-apk.apk
           new-file-path: new-apk.apk
@@ -175,7 +174,6 @@ jobs:
           debug: true
 
       - uses: actions/upload-artifact@v4
-        if: ${{ false }}  # diffuse isn't compatible with windows
         with:
           name: diffuse-output-3
           path: ${{ steps.diffuse.outputs.diff-file }}
