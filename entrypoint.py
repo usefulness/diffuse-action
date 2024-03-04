@@ -7,6 +7,7 @@ import json
 import uuid
 import zipfile
 import stat
+import sys
 from itertools import zip_longest
 
 
@@ -45,17 +46,16 @@ def is_debug():
     return os.getenv("INPUT_DEBUG", False)
 
 
-def _escape(message):
-    return message.replace('\x00', '') \
-        .replace("\"", "")
+def is_windows():
+    return os.name == "nt"
 
 
 def github_output(key, message):
     delimiter = str(uuid.uuid4())
-
-    os.system(f"echo \"{key}<<${delimiter}\" >> $GITHUB_OUTPUT")
-    os.system(f"echo \"{_escape(message)}\" >> $GITHUB_OUTPUT")
-    os.system(f"echo \"${delimiter}\" >> $GITHUB_OUTPUT")
+    with open(os.environ['GITHUB_OUTPUT'], mode='a', encoding='UTF-8') as fh:
+        print(f'{key}<<${delimiter}', file=fh)
+        print(message, file=fh)
+        print(f'${delimiter}', file=fh)
 
 
 def section(_title, _content):
@@ -63,9 +63,9 @@ def section(_title, _content):
 <details>
   <summary>{_title}</summary>
   
-\\`\\`\\`
+```
 {_content}
-\\`\\`\\`
+```
 </details>
 
 """
@@ -73,9 +73,9 @@ def section(_title, _content):
 
 def header(_content):
     return f"""
-\\`\\`\\`
+```
 {_content}
-\\`\\`\\`
+```
 """
 
 
@@ -116,7 +116,7 @@ else:
     with zipfile.ZipFile("diffuse.zip", "r") as zip_ref:
         zip_ref.extractall("diffuse_extracted")
 
-    if os.name == "nt":
+    if is_windows():
         executable_name = "diffuse.bat"
     else:
         executable_name = "diffuse"
@@ -167,12 +167,10 @@ os.system(f"echo \"size-diff-comment_style_1={diffComment1}\" >> $GITHUB_OUTPUT"
 process = subprocess.Popen(exec_call, stdout=subprocess.PIPE)
 out, _ = process.communicate()
 
-diff = out.decode("utf-8").strip()
+diff = out.decode(encoding=sys.stdout.encoding).strip()
 
 if process.returncode != 0:
-    print(f"output={diff}")
     raise Exception("Error while executing diffuse")
-
 
 if is_debug():
     print(f"Diff size: {len(diff)}")
