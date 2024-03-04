@@ -13,10 +13,10 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - name: Get old version of Andorid Auto app for test purposes
+      - name: Get old version of Android Auto app for test purposes
         run: wget "https://github.com/usefulness/storage/raw/master/android-auto-old.apk" -O old-apk.apk
 
-      - name: Get new version of Andorid Auto app for test purposes
+      - name: Get new version of Android Auto app for test purposes
         run: wget "https://github.com/usefulness/storage/raw/master/android-auto-new.apk" -O new-apk.apk
 
       - id: diffuse
@@ -83,10 +83,10 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - name: Get very old version of Andorid Auto app for test purposes
+      - name: Get very old version of Android Auto app for test purposes
         run: wget "https://github.com/usefulness/storage/raw/master/android-auto-very-old.apk" -O very-old-apk.apk
 
-      - name: Get new version of Andorid Auto app for test purposes
+      - name: Get new version of Android Auto app for test purposes
         run: wget "https://github.com/usefulness/storage/raw/master/android-auto-new.apk" -O new-apk.apk
 
       - id: diffuse
@@ -158,18 +158,20 @@ jobs:
 
       - run: python -m pip install requests
 
-      - name: Get old version of Andorid Auto app for test purposes
-        run: curl.exe --output old-apk.apk "https://github.com/usefulness/storage/raw/master/android-auto-old.apk"
+      - name: Get old version of Android Auto app for test purposes
+        run: wget "https://github.com/usefulness/storage/raw/master/android-auto-very-old.apk" -O very-old-apk.apk
+        shell: bash
 
-      - name: Get new version of Andorid Auto app for test purposes
-        run: curl.exe --output new-apk.apk "https://github.com/usefulness/storage/raw/master/android-auto-new.apk"
+      - name: Get new version of Android Auto app for test purposes
+        run: wget "https://github.com/usefulness/storage/raw/master/android-auto-new.apk" -O new-apk.apk
+        shell: bash
 
       - id: diffuse
         uses: ./
         with:
           old-file-path: old-apk.apk
           new-file-path: new-apk.apk
-          lib-version: 0.1.0
+          lib-version: 0.3.0
           diffuse-repo: JakeWharton/diffuse
           debug: true
 
@@ -194,10 +196,10 @@ jobs:
 
       - run: python -m pip install requests
 
-      - name: Get very old version of Andorid Auto app for test purposes
+      - name: Get very old version of Android Auto app for test purposes
         run: wget "https://github.com/usefulness/storage/raw/master/android-auto-very-old.apk" -O very-old-apk.apk
 
-      - name: Get new version of Andorid Auto app for test purposes
+      - name: Get new version of Android Auto app for test purposes
         run: wget "https://github.com/usefulness/storage/raw/master/android-auto-new.apk" -O new-apk.apk
 
       - id: diffuse
