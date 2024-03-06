@@ -1,4 +1,4 @@
-name: 'Diffuse Action for Gradle'
+name: 'Diffuse Action for Gradle' 
 description: "Generates Jake Wharton's Diffuse tool output between head and target branch of a Pull Request"
 inputs:
   old-file-path:
