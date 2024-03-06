@@ -7,7 +7,6 @@ import json
 import uuid
 import zipfile
 import stat
-import sys
 from itertools import zip_longest
 
 
@@ -144,6 +143,9 @@ if os.getenv("INPUT_OLD_MAPPING_FILE").strip():
     exec_call.extend(["--old-mapping", os.getenv("INPUT_OLD_MAPPING_FILE")])
 if os.getenv("INPUT_NEW_MAPPING_FILE").strip():
     exec_call.extend(["--new-mapping", os.getenv("INPUT_NEW_MAPPING_FILE")])
+exec_call.append("--text")
+output_file_name = "diffuse-output.txt"
+exec_call.append(output_file_name)
 
 oldSize = os.stat(oldFile).st_size
 oldSizeText = sizeof_fmt(oldSize)
@@ -158,16 +160,20 @@ if is_debug():
     print(diffComment1)
     print(" ".join(exec_call))
 
-os.system(f"echo \"size-old-bytes={oldSize}\" >> $GITHUB_OUTPUT")
-os.system(f"echo \"size-old-text={oldSizeText}\" >> $GITHUB_OUTPUT")
-os.system(f"echo \"size-new-bytes={newSize}\" >> $GITHUB_OUTPUT")
-os.system(f"echo \"size-new-text={newSizeText}\" >> $GITHUB_OUTPUT")
-os.system(f"echo \"size-diff-comment_style_1={diffComment1}\" >> $GITHUB_OUTPUT")
+github_output("size-old-bytes", oldSize)
+github_output("size-old-text", oldSizeText)
+github_output("size-new-bytes", newSize)
+github_output("size-new-text", newSizeText)
+github_output("size-diff-comment_style_1", diffComment1)
 
-process = subprocess.Popen(exec_call, stdout=subprocess.PIPE)
-out, _ = process.communicate()
 
-diff = out.decode(encoding=sys.stdout.encoding).strip()
+process = subprocess.run(exec_call)
+if process.returncode != 0:
+    raise Exception("Error while executing diffuse")
+
+with open(output_file_name, mode="r", encoding="utf-8") as output:
+    outputPath = os.path.realpath(output.name)
+    diff = output.read()
 
 if process.returncode != 0:
     raise Exception("Error while executing diffuse")
@@ -180,6 +186,7 @@ sections = ["SUMMARY"] + headerPattern.split(diff)
 
 if is_debug():
     print(f"Found {len(sections)} sections")
+    print(f"Full output stored in: {outputPath}")
 
 github_comment = ""
 github_comment_all_collapsed = ""
@@ -205,13 +212,6 @@ for (title, content) in grouper(sections, 2):
         if key != "dex":
             github_comment_no_dex += section(title.strip(), value)
             github_comment_no_dex_all_collapsed += section(title.strip(), value)
-
-output = open("diffuse-output.txt", "w")
-output.write(diff)
-output.close()
-outputPath = os.path.realpath(output.name)
-if is_debug():
-    print(f"Full output stored in: {outputPath}")
 
 github_output("diff-file", outputPath)
 github_output("diff-raw", diff[0:github_output_limit])
