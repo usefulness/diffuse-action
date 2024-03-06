@@ -7,6 +7,7 @@ import json
 import uuid
 import zipfile
 import stat
+import sys
 from itertools import zip_longest
 
 
@@ -45,17 +46,16 @@ def is_debug():
     return os.getenv("INPUT_DEBUG", False)
 
 
-def _escape(message):
-    return message.replace('\x00', '') \
-        .replace("\"", "")
+def is_windows():
+    return os.name == "nt"
 
 
 def github_output(key, message):
     delimiter = str(uuid.uuid4())
-
-    os.system(f"echo \"{key}<<${delimiter}\" >> $GITHUB_OUTPUT")
-    os.system(f"echo \"{_escape(message)}\" >> $GITHUB_OUTPUT")
-    os.system(f"echo \"${delimiter}\" >> $GITHUB_OUTPUT")
+    with open(os.environ['GITHUB_OUTPUT'], mode='a', encoding='UTF-8') as fh:
+        print(f'{key}<<${delimiter}', file=fh)
+        print(message, file=fh)
+        print(f'${delimiter}', file=fh)
 
 
 def section(_title, _content):
@@ -63,9 +63,9 @@ def section(_title, _content):
 <details>
   <summary>{_title}</summary>
   
-\\`\\`\\`
+```
 {_content}
-\\`\\`\\`
+```
 </details>
 
 """
@@ -73,9 +73,9 @@ def section(_title, _content):
 
 def header(_content):
     return f"""
-\\`\\`\\`
+```
 {_content}
-\\`\\`\\`
+```
 """
 
 
@@ -107,18 +107,20 @@ if not is_debug():
     downloadArgs += "-q"
 
 if url.endswith(".jar"):
-    os.system(f"wget \"{url}\" {downloadArgs} -O diffuse.jar")
+    r = requests.get(url, allow_redirects=True)
+    open("diffuse.jar", "wb").write(r.content)
     exec_call = ["java", "-jar", "diffuse.jar"]
 else:
-    os.system(f"wget \"{url}\" {downloadArgs} -O diffuse.zip")
+    r = requests.get(url, allow_redirects=True)
+    open("diffuse.zip", "wb").write(r.content)
     with zipfile.ZipFile("diffuse.zip", "r") as zip_ref:
         zip_ref.extractall("diffuse_extracted")
 
-    if os.name == "nt":
+    if is_windows():
         executable_name = "diffuse.bat"
     else:
         executable_name = "diffuse"
-    runnable = f"diffuse_extracted/diffuse-{lib_version}/bin/{executable_name}"
+    runnable = os.path.join("diffuse_extracted", f"diffuse-{lib_version}", "bin", executable_name)
     st = os.stat("diffuse_extracted")
     os.chmod(runnable, st.st_mode | stat.S_IEXEC)
     exec_call = [runnable]
@@ -165,10 +167,10 @@ os.system(f"echo \"size-diff-comment_style_1={diffComment1}\" >> $GITHUB_OUTPUT"
 process = subprocess.Popen(exec_call, stdout=subprocess.PIPE)
 out, _ = process.communicate()
 
+diff = out.decode(encoding=sys.stdout.encoding).strip()
+
 if process.returncode != 0:
     raise Exception("Error while executing diffuse")
-
-diff = out.decode("utf-8").strip()
 
 if is_debug():
     print(f"Diff size: {len(diff)}")

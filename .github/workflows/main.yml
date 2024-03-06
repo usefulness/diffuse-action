@@ -1,6 +1,10 @@
 on:
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
+
 jobs:
   test-apk:
     runs-on: ubuntu-latest
@@ -13,10 +17,10 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - name: Get old version of Andorid Auto app for test purposes
+      - name: Get old version of Android Auto app for test purposes
         run: wget "https://github.com/usefulness/storage/raw/master/android-auto-old.apk" -O old-apk.apk
 
-      - name: Get new version of Andorid Auto app for test purposes
+      - name: Get new version of Android Auto app for test purposes
         run: wget "https://github.com/usefulness/storage/raw/master/android-auto-new.apk" -O new-apk.apk
 
       - id: diffuse
@@ -83,10 +87,10 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - name: Get very old version of Andorid Auto app for test purposes
+      - name: Get very old version of Android Auto app for test purposes
         run: wget "https://github.com/usefulness/storage/raw/master/android-auto-very-old.apk" -O very-old-apk.apk
 
-      - name: Get new version of Andorid Auto app for test purposes
+      - name: Get new version of Android Auto app for test purposes
         run: wget "https://github.com/usefulness/storage/raw/master/android-auto-new.apk" -O new-apk.apk
 
       - id: diffuse
@@ -142,8 +146,12 @@ jobs:
           name: diffuse-output-2
           path: ${{ steps.diffuse.outputs.diff-file }}
 
-  test-windows:
-    runs-on: windows-latest
+  smoke-test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
     steps:
       - uses: actions/checkout@v4
 
@@ -152,66 +160,43 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
+      - run: python3 -m pip install requests
+        shell: bash
 
-      - run: python -m pip install requests
+      - name: Get Android Auto app APKs for test purposes
+        run: |
+          import requests
+          responseOld = requests.get("https://github.com/usefulness/storage/raw/master/android-auto-very-old.apk")
+          open("very-old-apk.apk", "wb").write(responseOld.content)
+          responseNew = requests.get("https://github.com/usefulness/storage/raw/master/android-auto-new.apk")
+          open("new-apk.apk", "wb").write(responseNew.content)
+        shell: python
 
-      - name: Get old version of Andorid Auto app for test purposes
-        run: curl.exe --output old-apk.apk "https://github.com/usefulness/storage/raw/master/android-auto-old.apk"
-
-      - name: Get new version of Andorid Auto app for test purposes
-        run: curl.exe --output new-apk.apk "https://github.com/usefulness/storage/raw/master/android-auto-new.apk"
-
-      - id: diffuse
-        uses: ./
-        if: ${{ false }}  # diffuse isn't compatible with windows
-        with:
-          old-file-path: old-apk.apk
-          new-file-path: new-apk.apk
-          lib-version: 0.1.0
-          diffuse-repo: JakeWharton/diffuse
-          debug: true
-
-      - uses: actions/upload-artifact@v4
-        if: ${{ false }}  # diffuse isn't compatible with windows
-        with:
-          name: diffuse-output-3
-          path: ${{ steps.diffuse.outputs.diff-file }}
-
-  test-macos:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 21
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-
-      - run: python -m pip install requests
-
-      - name: Get very old version of Andorid Auto app for test purposes
-        run: wget "https://github.com/usefulness/storage/raw/master/android-auto-very-old.apk" -O very-old-apk.apk
-
-      - name: Get new version of Andorid Auto app for test purposes
-        run: wget "https://github.com/usefulness/storage/raw/master/android-auto-new.apk" -O new-apk.apk
-
-      - id: diffuse
+      - id: diffuse-custom-repo-hardcoded
         uses: ./
         with:
           old-file-path: very-old-apk.apk
           new-file-path: new-apk.apk
-          debug: true
-          lib-version: latest
+          lib-version: 0.3.0
           diffuse-repo: JakeWharton/diffuse
+          debug: true
 
       - uses: actions/upload-artifact@v4
         with:
-          name: diffuse-output-4
-          path: ${{ steps.diffuse.outputs.diff-file }}
+          name: diffuse-custom-repo-hardcoded-${{ matrix.os }}
+          path: ${{ steps.diffuse-custom-repo-hardcoded.outputs.diff-file }}
+
+      - id: diffuse-custom-repo-latest
+        uses: ./
+        with:
+          old-file-path: very-old-apk.apk
+          new-file-path: new-apk.apk
+          lib-version: latest
+          diffuse-repo: JakeWharton/diffuse
+          debug: true
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: diffuse-custom-repo-latest-${{ matrix.os }}
+          path: ${{ steps.diffuse-custom-repo-latest.outputs.diff-file }}
+
