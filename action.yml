@@ -102,5 +102,5 @@ runs:
         INPUT_DIFFUSE_REPO: ${{ inputs.diffuse-repo }}
         INPUT_DEBUG: ${{ inputs.debug }}
         INPUT_GITHUB_TOKEN: ${{ github.token }}
-      run: python3 entrypoint.py
+      run: python3 "$GITHUB_ACTION_PATH"/entrypoint.py
       shell: bash
