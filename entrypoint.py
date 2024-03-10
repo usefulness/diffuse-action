@@ -42,7 +42,7 @@ def find_tool_coordinates():
 
 
 def is_debug():
-    return os.getenv("INPUT_DEBUG", False)
+    return os.getenv("INPUT_DEBUG", "false").casefold() == "true".casefold()
 
 
 def is_windows():
