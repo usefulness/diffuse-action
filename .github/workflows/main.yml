@@ -193,7 +193,6 @@ jobs:
           new-file-path: new-apk.apk
           lib-version: latest
           diffuse-repo: JakeWharton/diffuse
-          debug: true
 
       - uses: actions/upload-artifact@v4
         with:
