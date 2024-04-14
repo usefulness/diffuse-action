@@ -57,12 +57,12 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     
-    - uses: actions/setup-java@v2
+    - uses: actions/setup-java@v3
       with:
         distribution: 'temurin'
         java-version: 21
       
-    - uses: gradle/gradle-build-action@v2
+    - uses: gradle/actions/setup-gradle@v3
       with:
         arguments: assemble
 
@@ -128,12 +128,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       
-      - uses: actions/setup-java@v2
+      - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: 21
           
-      - uses: gradle/gradle-build-action@v2
+      - uses: gradle/actions/setup-gradle@v3
         with:
           arguments: assemble
 
