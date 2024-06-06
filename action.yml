@@ -89,9 +89,6 @@ branding:
 runs:
   using: 'composite'
   steps:
-    - run: python3 -m pip install requests
-      shell: bash
-
     - id: run-diffuse
       env:
         INPUT_OLD_FILE: ${{ inputs.old-file-path }}
@@ -102,5 +99,13 @@ runs:
         INPUT_DIFFUSE_REPO: ${{ inputs.diffuse-repo }}
         INPUT_DEBUG: ${{ inputs.debug }}
         INPUT_GITHUB_TOKEN: ${{ github.token }}
-      run: python3 "$GITHUB_ACTION_PATH"/entrypoint.py
+      run: |
+        python3 -m venv "$GITHUB_ACTION_PATH"/diffuse-venv
+        if [[ "$OSTYPE" == "cygwin" ]] || [[ "$OSTYPE" == "msys" ]]; then
+          source "$GITHUB_ACTION_PATH"/diffuse-venv/Scripts/activate
+        else
+          source "$GITHUB_ACTION_PATH"/diffuse-venv/bin/activate
+        fi
+        python3 -m pip install requests
+        python3 "$GITHUB_ACTION_PATH"/entrypoint.py
       shell: bash
