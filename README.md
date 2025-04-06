@@ -60,7 +60,7 @@ jobs:
     - uses: actions/setup-java@v3
       with:
         distribution: 'temurin'
-        java-version: 21
+        java-version: 23
       
     - uses: gradle/actions/setup-gradle@v3
       with:
@@ -131,7 +131,7 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: 21
+          java-version: 23
           
       - uses: gradle/actions/setup-gradle@v3
         with:
