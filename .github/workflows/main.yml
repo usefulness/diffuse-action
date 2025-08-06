@@ -20,11 +20,11 @@ jobs:
           distribution: temurin
           java-version: 24
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: old-apk
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: new-apk
 
@@ -95,11 +95,11 @@ jobs:
           distribution: temurin
           java-version: 24
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: very-old-apk
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: new-apk
 
@@ -209,11 +209,11 @@ jobs:
           distribution: temurin
           java-version: 24
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: very-old-apk
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: new-apk
 
