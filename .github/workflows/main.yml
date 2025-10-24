@@ -20,11 +20,11 @@ jobs:
           distribution: temurin
           java-version: 24
 
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v6
         with:
           name: old-apk
 
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v6
         with:
           name: new-apk
 
@@ -76,7 +76,7 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: diffuse-output-1
           path: ${{ steps.diffuse.outputs.diff-file }}
@@ -95,11 +95,11 @@ jobs:
           distribution: temurin
           java-version: 24
 
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v6
         with:
           name: very-old-apk
 
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v6
         with:
           name: new-apk
 
@@ -151,7 +151,7 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: diffuse-output-2
           path: ${{ steps.diffuse.outputs.diff-file }}
@@ -162,7 +162,7 @@ jobs:
       - name: Get very old version of Android Auto app for test purposes
         run: wget "https://github.com/usefulness/storage/raw/master/android-auto-very-old.apk" -O very-old-apk.apk
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: very-old-apk
           path: very-old-apk.apk
@@ -174,7 +174,7 @@ jobs:
       - name: Get old version of Android Auto app for test purposes
         run: wget "https://github.com/usefulness/storage/raw/master/android-auto-old.apk" -O old-apk.apk
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: old-apk
           path: old-apk.apk
@@ -186,7 +186,7 @@ jobs:
       - name: Get new version of Android Auto app for test purposes
         run: wget "https://github.com/usefulness/storage/raw/master/android-auto-new.apk" -O new-apk.apk
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: new-apk
           path: new-apk.apk
@@ -209,11 +209,11 @@ jobs:
           distribution: temurin
           java-version: 24
 
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v6
         with:
           name: very-old-apk
 
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v6
         with:
           name: new-apk
 
@@ -226,7 +226,7 @@ jobs:
           diffuse-repo: JakeWharton/diffuse
           debug: true
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: diffuse-custom-repo-hardcoded-${{ matrix.os }}
           path: ${{ steps.diffuse-custom-repo-hardcoded.outputs.diff-file }}
@@ -239,7 +239,7 @@ jobs:
           lib-version: latest
           diffuse-repo: JakeWharton/diffuse
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: diffuse-custom-repo-latest-${{ matrix.os }}
           path: ${{ steps.diffuse-custom-repo-latest.outputs.diff-file }}
