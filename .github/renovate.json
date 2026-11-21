@@ -3,6 +3,7 @@
     "mateuszkwiecinski"
   ],
   "extends": [
-    "config:recommended"
+    "config:recommended",
+    "github>usefulness/project-starter//.github/renovate/build-jdk"
   ]
 }
